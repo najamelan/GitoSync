@@ -1,3 +1,6 @@
 [submodule "lib/tidbits"]
 	path = lib/tidbits
 	url = git@github.com:najamelan/tidbits_ruby.git
+[submodule "ext/gitolite"]
+	path = ext/gitolite
+	url = git@github.com:sitaramc/gitolite.git
