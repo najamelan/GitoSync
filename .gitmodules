@@ -1,0 +1,3 @@
+[submodule "lib/tidbits"]
+	path = lib/tidbits
+	url = git@github.com:najamelan/tidbits_ruby.git
