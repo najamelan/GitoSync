@@ -1,0 +1,6 @@
+lib/gitomate/*.rb
+bin/*
+test/*
+
+- README.md
+- md/**
