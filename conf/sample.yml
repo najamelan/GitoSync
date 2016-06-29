@@ -1,0 +1,6 @@
+repos:
+
+  test:
+
+    name   : test
+    dir    : test

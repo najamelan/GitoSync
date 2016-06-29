@@ -1,19 +1,22 @@
 
 require 'rubygems'
 require 'thor'
-require 'pp'
 
-class  Gitosync < Thor
+require_relative 'lib/gitomate'
+
+
+class Gitomate < Thor
 
 include Thor::Actions
 
 
-@@configDir = '/etc/gitosync'
+def initialize( *args )
 
+	super
 
-def self.source_root
-
-  File.dirname( __FILE__ )
+	@config  = ::Gitomate::Config.new
+	@binDir  = @config.installCfg[ :binDir    ]
+	@confDir = @config.installCfg[ :configDir ]
 
 end
 
@@ -25,10 +28,22 @@ def install
 
 	begin
 
-		copy_file 'bin/gitosync', '/usr/local/bin/gitosync', { :force => true }
+		here = Rush[ File.dirname( __FILE__ ) ]
 
-		create_file      @@configDir + '/config'
-		empty_directory  @@configDir + '/config.d'
+
+		bins = here[ 'bin/*' ]
+
+		bins.each do |bin|
+
+			chmod bin.full_path, 755
+			bin.symlink @binDir, :force => true
+
+		end
+
+
+		conf  = Rush::Dir.new( @confDir )
+
+		conf.exists? or conf.create
 
 	rescue Errno::EACCES
 
@@ -47,7 +62,16 @@ def uninstall
 
 	begin
 
-		remove_file '/usr/local/bin/gitosync'
+		here = Rush[ File.dirname( __FILE__ ) ]
+
+
+		bins = here[ 'bin/*' ]
+
+		bins.each do |bin|
+
+			Rush::Dir.new( @binDir )[ bin.name ].destroy
+
+		end
 
 	rescue Errno::EACCES
 
@@ -60,16 +84,15 @@ end
 
 
 
-desc 'purge', 'Uninstalls the application from the system AND REMOVES CONFIGURATION FILES IN /etc/gitosync !!!'
+desc 'purge', 'Uninstalls the application from the system AND REMOVES CONFIGURATION FILES IN /etc/gitomate.d !!!'
 
 def purge
 
+	invoke :uninstall
+
 	begin
 
-		remove_file '/usr/local/bin/gitosync'
-
-		remove_file @@configDir + '/config'
-		remove_file @@configDir + '/config.d'
+		Rush::Dir.new( @confDir ).destroy
 
 	rescue Errno::EACCES
 
@@ -77,6 +100,20 @@ def purge
 		exit 1
 
 	end
+
+end
+
+
+
+desc 'test', 'Run the unit tests for Gitomate. This will install the application since it also tests the installer.'
+
+def test
+
+	invoke :install
+
+	require_relative 'test/run'
+
+	# ::Gitomate::TestSuite.run
 
 end
 
@@ -87,4 +124,4 @@ end
 
 
 
-end # class Gitosync
+end # class gitomate

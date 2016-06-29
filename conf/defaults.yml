@@ -1,0 +1,34 @@
+# DO NOT MAKE CHANGES TO THIS FILE. THEY WILL BE OVERWRITTEN BY UPDATES.
+#
+# use conf.d/yourconf.yml
+# configuration files in conf.d will be loaded in alphabetical order with later files
+# overriding options set in earlier files. Note that hashes will be merged, but that
+# arrays (eg. 'gitusers' or 'repos') will be overwritten.
+#
+
+# These are defaults for every repository. In the repos section, if you ommit these keys, these defaults
+# will be used. You can override these defaults in conf.d
+#
+repo:
+
+  branch   : master
+  parentDir: /var/www
+  gituser  : gitcontent
+
+# The list of repositories that gitomate manages. Defaults to an empty array.
+#
+repos   : []
+
+# The different gitusers that gitomate interacts with. You could have different ones
+# for example if you want to use etckeeper with gitolite to manage your server configuration
+# but want a different gitolite user which does not have root privileges for your user content
+# (eg. websites)
+#
+gitusers:
+
+  - gitetc
+  - gitcontent
+
+
+
+

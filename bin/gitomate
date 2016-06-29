@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+
+module Gitomate
+
+require 'rubygems'
+require 'thor'
+require 'logger'
+require 'pp'
+require 'yaml'
+require_relative '../lib/gitomate'
+
+class Gitomate < Thor
+
+
+class_option                                                 \
+                                                             \
+	  :'verbose'                                              \
+	, :aliases   => '-v'                                      \
+	, :type      => :boolean                                  \
+	, :default   => false                                     \
+	, :desc      => 'Show more feedback'                      \
+
+
+
+def initialize( *args )
+
+	super
+	@log    = Logger.new( STDERR )
+
+	@log.info 'loading gitomate'
+	@config = Config.new
+
+end
+
+
+
+desc 'sync', 'Syncs all configured repositories between gitolite and file system'
+
+def sync( *args )
+
+	@log.info ARGV.inspect
+	@log.info ENV.to_hash.to_yaml
+
+end
+
+
+
+desc 'status', 'Test the system for compliance with the configuration and report'
+
+def status( *args )
+
+	@log.info options
+	@log.info args
+
+end
+
+
+
+
+
+end # class gitomate
+
+end # module gitomate
+
+
+Gitomate::Gitomate.start
