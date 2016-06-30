@@ -38,18 +38,8 @@ desc 'sync', 'Syncs all configured repositories between gitolite and file system
 
 def sync( *args )
 
-	begin
-
-		File.open( "mlkjmlk")
-
-	rescue => e
-
-		@log.error( "log message:", e )
-
-	end
-
-	@log.info ARGV.inspect
-	@log.info ENV.to_h.to_yaml
+	# @log.info ARGV.inspect
+	# @log.info ENV.to_h.to_yaml
 
 end
 
@@ -57,10 +47,14 @@ end
 
 desc 'status', 'Test the system for compliance with the configuration and report'
 
-def status( *args )
+def status
 
-	@log.info options
-	@log.info args
+	@sync = Sync.new( @config.defaults, @config.userset )
+
+	@sync.sync
+	# @log.debug @repos.to_yaml
+	# @log.debug @config.options.to_yaml
+	# @log.info args
 
 end
 

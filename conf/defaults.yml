@@ -45,8 +45,9 @@ feedback:
 #
 repo:
 
+  bare     : gitolite
   branch   : master
-  parentDir: /var/www
+  track    : gitolite/master
   gituser  : gitcontent
 
 

@@ -15,8 +15,8 @@ def initialize( *args )
 	super
 
 	@config  = ::Gitomate::Config.get
-	@binDir  = @config.options( :install, :binDir    )
-	@confDir = @config.options( :install, :configDir )
+	@binDir  = @config.options( :binDir    )
+	@confDir = @config.options( :configDir )
 
 end
 
@@ -44,6 +44,8 @@ def install
 		conf  = Rush::Dir.new( @confDir )
 
 		conf.exists? or conf.create
+
+		here[ 'conf/sample.yml' ].symlink conf.to_s, force: true
 
 	rescue Errno::EACCES
 

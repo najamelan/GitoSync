@@ -1,7 +1,5 @@
 
 # The directory where gitomate configuration is going to be saved.
 #
-install:
-
-  configDir: /etc/gitomate.d
-  binDir   : /usr/local/bin
+configDir: /etc/gitomate.d
+binDir   : /usr/local/bin
