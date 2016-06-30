@@ -5,39 +5,47 @@ class Config
 
 include TidBits::Options::Configurable
 
-attr_reader :logger
-attr_reader :installCfg
+@@instance = nil
 
-# initialize with an array of config files and a driver (yaml) or a hash
-# get the options as a hash (defaults, userset, options)
-# set an option
-#
+
+def self.get
+
+	@@instance || @@instance = self.new
+
+end
+
+
+private
 def initialize()
 
-	@box       = Rush[ '/' ]
-	@logger    = Logger.new( STDERR )
-
-	@installCfg = YAML.load_file "#{File.dirname( __FILE__ )}/../../conf/install.yml"
+	# Load the installer
+	#
 	@defaults   = YAML.load_file "#{File.dirname( __FILE__ )}/../../conf/defaults.yml"
+	@installCfg = YAML.load_file "#{File.dirname( __FILE__ )}/../../conf/install.yml"
 
 	@installCfg.deep_symbolize_keys!
-	@configDir = @installCfg[ :configDir ]
 
 
+	# Parse the user's config files
+	#
+	@box     = Rush[ '/' ]
 	@userset = {}
 
-	@box[ "#{@configDir}/*.yml" ].each do |file|
+	@box[ "#{@installCfg[ :configDir ]}/*.yml" ].each do |file|
 
 		h = YAML.load_file file.full_path
 		h.is_a?( Hash ) && @userset.recursiveMerge!( h )
 
 	end
 
+
+	# These can't be overridden, so they're not really defaults
+	#
+	@userset.recursiveMerge! @installCfg
+
 	setupOptions @defaults, @userset
 
 end
 
-
-
-end # class Config
-end # module gitomate
+end # class  Config
+end # module Gitomate

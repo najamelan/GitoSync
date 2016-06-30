@@ -25,10 +25,10 @@ class_option                                                 \
 def initialize( *args )
 
 	super
-	@log    = Logger.new( STDERR )
+	@log    = Feedback.get( 'bin/gitomate' )
 
 	@log.info 'loading gitomate'
-	@config = Config.new
+	@config = Config.get
 
 end
 
@@ -38,8 +38,18 @@ desc 'sync', 'Syncs all configured repositories between gitolite and file system
 
 def sync( *args )
 
+	begin
+
+		File.open( "mlkjmlk")
+
+	rescue => e
+
+		@log.error( "log message:", e )
+
+	end
+
 	@log.info ARGV.inspect
-	@log.info ENV.to_hash.to_yaml
+	@log.info ENV.to_h.to_yaml
 
 end
 

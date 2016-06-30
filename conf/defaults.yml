@@ -6,6 +6,40 @@
 # arrays (eg. 'gitusers' or 'repos') will be overwritten.
 #
 
+feedback:
+
+  logFile : gitomate.log
+  logDir  : /var/log/gitomate
+  keep    : 10                   # keep at most 10 rotated logfiles
+  maxSize : 1048576              # 1MB in bytes
+
+  # The different places to send feedback.
+  #
+  # The different possible values for logLevel are: :DEBUG, :INFO, :WARN, :ERROR, :FATAL
+  #
+  outputs :
+
+    # feedback goes to the logFile specified in this section
+    #
+    file:
+
+      enabled : true
+      logLevel: :DEBUG
+
+    STDERR:
+
+      enabled : true
+      logLevel: :DEBUG
+
+    # Beware of enabling feedback to STDOUT, as the git protocol uses STDOUT. That means that things will break
+    # with not so obvious error messages if this is used in git hooks and gitolite triggers.
+    #
+    STDOUT:
+
+      enabled : false
+      logLevel: :WARN
+
+
 # These are defaults for every repository. In the repos section, if you ommit these keys, these defaults
 # will be used. You can override these defaults in conf.d
 #
@@ -15,11 +49,13 @@ repo:
   parentDir: /var/www
   gituser  : gitcontent
 
-# The list of repositories that gitomate manages. Defaults to an empty array.
+
+# The list of repositories that gitomate manages. Must be an array. Defaults to an empty array.
 #
 repos   : []
 
-# The different gitusers that gitomate interacts with. You could have different ones
+
+# The different gitusers that gitomate interacts with. Must be an array. You could have different ones
 # for example if you want to use etckeeper with gitolite to manage your server configuration
 # but want a different gitolite user which does not have root privileges for your user content
 # (eg. websites)

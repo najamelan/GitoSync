@@ -14,9 +14,9 @@ def initialize( *args )
 
 	super
 
-	@config  = ::Gitomate::Config.new
-	@binDir  = @config.installCfg[ :binDir    ]
-	@confDir = @config.installCfg[ :configDir ]
+	@config  = ::Gitomate::Config.get
+	@binDir  = @config.options( :install, :binDir    )
+	@confDir = @config.options( :install, :configDir )
 
 end
 
@@ -35,8 +35,8 @@ def install
 
 		bins.each do |bin|
 
-			chmod bin.full_path, 755
-			bin.symlink @binDir, :force => true
+			chmod bin.to_s, 755
+			bin.symlink @binDir, force: true
 
 		end
 
