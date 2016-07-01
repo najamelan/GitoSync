@@ -69,6 +69,16 @@ def canConnect?
 end
 
 
+
+def canWriteRemote?
+
+	@remote or return false
+
+	@remote.canWriteRemote?
+
+end
+
+
 def pathExists?() @path.exists? end
 def valid?	   () !!@rug        end
 

@@ -48,9 +48,8 @@ def sync( dryRun = true )
 			# createWorkingDir or next
 			# pathPermissions
 			setRemote        or next
-			connectRemote
-			existInBare
-			canWriteBare
+			connectRemote    or next
+			canWriteRemote
 			installHooks
 			onRightBranch
 			submodulesClean
@@ -192,23 +191,28 @@ end
 
 
 
+def canWriteRemote
+
+	check                                                                \
+                                                                        \
+		  @repo.canWriteRemote?                                               \
+		, "#{@repo.paths} does not have a remote we can write to."      \
+		, "You should fix your permissions in gitolite-admin"             \
+                                                                        \
+	                                                                     \
+	do
+
+		@log.fatal "We can't write to #{@repo.options( :remoteUrl )}"
+		raise "Fix your permissions in gitolite-admin"
+
+
+	end
+
+end
+
+
+
 def installTrigger
-
-
-
-end
-
-
-
-def existInBare
-
-
-
-end
-
-
-
-def canWriteBare
 
 
 
