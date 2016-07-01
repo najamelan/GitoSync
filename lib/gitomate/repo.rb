@@ -5,47 +5,83 @@ class Repo
 
 include TidBits::Options::Configurable
 
-def initialize( default, userOpts = {} )
+
+
+# The rush object for the repo path
+#
+attr_reader :path
+
+# The string path for the repo
+#
+attr_reader :paths
+
+
+
+
+
+def initialize( default = {}, userOpts = {} )
+
+	super()
 
 	setupOptions( default, userOpts )
 
-	@log  = Feedback.get( self.class )
-	@path = Rush::Dir.new options[ :path ]
-	@bare = createBare
-
-	@log.debug( @path.to_s )
-
-end
+	@log     = Feedback.get( self.class )
+	@path    = Rush::Dir.new options[ :path ]
+	@paths   = @path.to_s
 
 
-def createBare
+	# Create a backend if the repo path exist and is a repo
+	#
+	begin
 
-	if options( :bareUrl ).include?( '@' )
+		@rug     = Rugged::Repository.new( @paths )
+		@remotes = @rug.remotes
 
-		driver = BareSSH.new( {} )
+		# Create the remote if it exists in the repo
+		#
+		if @remotes[ options( :remote ) ]
 
-	else
+			@remote = Remote.new( @remotes[ options( :remote ) ], defaults, userset )
 
-		raise NotImplementedError
+		else
+
+			@remote = nil
+
+		end
+
+
+	rescue Rugged::RepositoryError, Rugged::OSError
+
+		@rug = @remotes = @remote = nil
 
 	end
 
-
-	Bare.new( driver, defaults, userset )
-
 end
+
 
 
 def canConnect?
 
-	false
+	@remote or return false
+
+	@remote.canConnect?
 
 end
 
 
-def pathExists?()
+def pathExists?() @path.exists? end
+def valid?	   () !!@rug        end
 
 
+# TODO: maybe immediatly check fetch too?
+#
+def correctRemote?
+
+	url = @rug.config[  "remote.#{options( :remote )}.url" ]
+
+	url == options( :remoteUrl ) and return true
+
+	return false
 
 end
 

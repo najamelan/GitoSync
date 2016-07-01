@@ -9,7 +9,7 @@ def initialize( default, userOpts = {} )
 
 	setupOptions( default, userOpts )
 
-	@log   = Feedback.get( self.class )
+	@log   = Feedback.get( self.class.name )
 	@repos = []
 
 	options( :repos ).each do | repo |
@@ -41,20 +41,56 @@ def sync( dryRun = true )
 
 		@repo = repo
 
-		connectBare
-		existInBare
-		canWriteBare
-		installHooks
-		createPath
-		pathPermissions
-		onRightBranch
-		submodulesClean
-		workingDirClean
-		syncSubmodules
-		syncWithBare
-		repoPermissions
+		begin
+
+			createPath       or next
+			initRepo         or next
+			# createWorkingDir or next
+			# pathPermissions
+			setRemote        or next
+			connectRemote
+			existInBare
+			canWriteBare
+			installHooks
+			onRightBranch
+			submodulesClean
+			workingDirClean
+			syncSubmodules
+			syncWithBare
+			repoPermissions
+
+		rescue => e
+
+			@log.error e
+			next
+
+		end
 
 	end
+
+end
+
+
+
+def check( ok, warning, inform, &action )
+
+	ok and return true
+	@log.warn warning
+
+	@dryRun and return false
+
+	begin
+
+		action.call
+
+	rescue => e
+
+		@log.error e
+		return false
+
+	end
+
+	return true
 
 end
 
@@ -76,23 +112,89 @@ end
 
 
 
-def installTrigger
+def createPath
 
+	check                                                                \
+                                                                        \
+		  @repo.pathExists?                                               \
+		, "The path for the repo #{@repo.paths} does not exist."          \
+		, "Creating #{@repo.paths}"                                       \
+                                                                        \
+	                                                                     \
+	do
 
+		# create path
+
+	end
 
 end
 
 
 
-def connectBare
+def initRepo
 
-	if ! @repo.canConnect?
+	check                                                                \
+                                                                        \
+		  @repo.valid?                                                    \
+		, "#{@repo.paths} does not contain a valid git repo."             \
+		, "Creating #{@repo.paths}"                                       \
+                                                                        \
+	                                                                     \
+	do
 
-		@log.fatal "Can not connect to #{@repo.options( :bareUrl )}"
-
-		raise
+		raise "shouldn't be called"
+		@repo.init
 
 	end
+
+end
+
+
+
+def setRemote
+
+	check                                                                \
+                                                                        \
+		  @repo.correctRemote?                                            \
+		, "#{@repo.paths} does not have the correct remote set."          \
+		, "Creating #{@repo.paths}"                                       \
+                                                                        \
+	                                                                     \
+	do
+
+		raise "shouldn't be called"
+		@repo.fixRemote
+
+	end
+
+end
+
+
+
+def connectRemote
+
+	check                                                                \
+                                                                        \
+		  @repo.canConnect?                                               \
+		, "#{@repo.paths} does not have a remote we can connect to."      \
+		, "Bailing out, there's not much we can do"                       \
+                                                                        \
+	                                                                     \
+	do
+
+		@log.fatal "We can't connect to #{@repo.options( :remoteUrl )}"
+		raise "This shouldn't happen"
+
+
+	end
+
+end
+
+
+
+def installTrigger
+
+
 
 end
 
@@ -115,14 +217,6 @@ end
 
 
 def installHooks
-
-
-
-end
-
-
-
-def createPath
 
 
 

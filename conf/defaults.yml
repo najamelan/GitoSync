@@ -45,10 +45,15 @@ feedback:
 #
 repo:
 
-  bare     : gitolite
+  remote   : gitolite
   branch   : master
   track    : gitolite/master
   gituser  : gitcontent
+
+  # This is a placeholder, just to say that if you don't specify a remoteUrl, this will be the defaults
+  # %name% stands for the last part of the path, note that path does not have a default.
+  #
+  remoteUrl: '%gituser@localhost:name%'
 
 
 # The list of repositories that gitomate manages. Must be an array. Defaults to an empty array.
