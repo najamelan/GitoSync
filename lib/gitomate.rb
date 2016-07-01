@@ -3,6 +3,8 @@ require 'logger'
 require 'net/ssh'
 require 'rugged'
 
+require_relative '../ext/git/lib/git'
+
 require_relative 'tidbits/lib/tidbits'
 require_relative 'gitomate/config'
 require_relative 'gitomate/yaml_log_format'

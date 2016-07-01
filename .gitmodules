@@ -4,3 +4,6 @@
 [submodule "ext/gitolite"]
 	path = ext/gitolite
 	url = git@github.com:sitaramc/gitolite.git
+[submodule "ext/git"]
+	path = ext/git
+	url = git@github.com:schacon/ruby-git.git
