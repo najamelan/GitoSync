@@ -59,12 +59,28 @@ def initialize( default = {}, userOpts = {} )
 end
 
 
+def pathExists?() @path.exists? end
+def valid?	   () !!@rug        end
+
+
 
 def canConnect?
 
 	@remote or return false
 
 	@remote.canConnect?
+
+end
+
+
+
+def correctRemote?
+
+	url = @rug.config[  "remote.#{options( :remote )}.url" ]
+
+	url == options( :remoteUrl ) and return true
+
+	return false
 
 end
 
@@ -79,38 +95,23 @@ def canWriteRemote?
 end
 
 
-def pathExists?() @path.exists? end
-def valid?	   () !!@rug        end
 
+def onRightBranch?
 
-# TODO: maybe immediatly check fetch too?
-#
-def correctRemote?
-
-	url = @rug.config[  "remote.#{options( :remote )}.url" ]
-
-	url == options( :remoteUrl ) and return true
-
-	return false
+	@rug.head.name == "refs/heads/#{ options( :branch ) }"
 
 end
 
 
+
 def workingDirClean?()
 
-
+	@rug.diff_workdir( @rug.head.name ).size == 0
 
 end
 
 
 def diverged?()
-
-
-
-end
-
-
-def onRightBranch?()
 
 
 

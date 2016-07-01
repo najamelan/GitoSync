@@ -8,7 +8,7 @@ def initialize( remote, default, userOpts = {} )
 
 	setupOptions( default, userOpts )
 
-	@log = Feedback.get( self.class.name )
+	@log = Feedback.get( 'Remote' )
 
 	@rug       = remote
 	@remoteUrl = remoteUrl

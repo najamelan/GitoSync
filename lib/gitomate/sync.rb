@@ -9,7 +9,7 @@ def initialize( default, userOpts = {} )
 
 	setupOptions( default, userOpts )
 
-	@log   = Feedback.get( self.class.name )
+	@log   = Feedback.get( 'Sync  ' )
 	@repos = []
 
 	options( :repos ).each do | repo |
@@ -47,13 +47,13 @@ def sync( dryRun = true )
 			initRepo         or next
 			# createWorkingDir or next
 			# pathPermissions
-			setRemote        or next
+			setRemote        # or next
 			connectRemote    or next
 			canWriteRemote
-			installHooks
 			onRightBranch
-			submodulesClean
 			workingDirClean
+			# installHooks
+			submodulesClean
 			syncSubmodules
 			syncWithBare
 			repoPermissions
@@ -212,6 +212,45 @@ end
 
 
 
+def onRightBranch
+
+	check                                                                \
+                                                                        \
+		  @repo.onRightBranch?                                            \
+		, "#{@repo.paths} does not have the correct branch checked out."  \
+		, "Trying to check out #{@repo.options( :branch )}"               \
+                                                                        \
+	                                                                     \
+	do
+
+		# Try to check out the correct branch
+
+
+	end
+
+end
+
+
+
+def workingDirClean
+
+	check                                                                \
+                                                                        \
+		  @repo.workingDirClean?                                          \
+		, "#{@repo.paths} does not have a clean working dir"              \
+		, "Running `git add --all` and `git commit`"                      \
+                                                                        \
+	                                                                     \
+	do
+
+		# Try to commit all
+
+	end
+
+end
+
+
+
 def installTrigger
 
 
@@ -236,23 +275,7 @@ end
 
 
 
-def onRightBranch
-
-
-
-end
-
-
-
 def submodulesClean
-
-
-
-end
-
-
-
-def workingDirClean
 
 
 
