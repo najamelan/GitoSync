@@ -1,0 +1,5 @@
+example2:
+
+  inherit: example
+
+  gitusers: [ 'willy billy' ]

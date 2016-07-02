@@ -7,7 +7,9 @@ require 'thor'
 require 'logger'
 require 'pp'
 require 'yaml'
+
 require_relative '../lib/gitomate'
+
 
 class Gitomate < Thor
 
@@ -22,13 +24,23 @@ class_option                                                 \
 
 
 
+class_option                                \
+                                            \
+	  :profile                               \
+	, aliases:  '-p'                         \
+	, type:     :string                      \
+	, default:  'default'                    \
+	, desc:     'The config profile to use'  \
+
+
+
 def initialize( *args )
 
 	super
+	@config = Config  .get( options[ :profile ] )
 	@log    = Feedback.get( 'bin/gitomate' )
 
 	@log.info 'loading gitomate'
-	@config = Config.get
 
 end
 

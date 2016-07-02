@@ -1,4 +1,3 @@
-
 require 'rubygems'
 require 'thor'
 
@@ -10,13 +9,28 @@ class Gitomate < Thor
 include Thor::Actions
 
 
+
+class_option                                \
+                                            \
+	  :profile                               \
+	, aliases:  '-p'                         \
+	, type:     :string                      \
+	, default:  'default'                    \
+	, desc:     'The config profile to use'  \
+
+
+
+
 def initialize( *args )
 
 	super
 
-	@config  = ::Gitomate::Config.get
-	@binDir  = @config.options( :binDir    )
-	@confDir = @config.options( :configDir )
+	pp "Using profile #{options[ :profile ]}"
+
+
+	@config  = ::Gitomate::Config.get( options[ :profile ] )
+	@binDir  = @config.options( :install, :binDir    )
+	@confDir = @config.options( :install, :configDir )
 
 end
 
@@ -45,7 +59,6 @@ def install
 
 		conf.exists? or conf.create
 
-		here[ 'conf/sample.yml' ].symlink conf.to_s, force: true
 
 	rescue Errno::EACCES
 
@@ -111,7 +124,7 @@ desc 'test', 'Run the unit tests for Gitomate. This will install the application
 
 def test
 
-	invoke :install
+	# invoke :install
 
 	require_relative 'test/run'
 

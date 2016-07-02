@@ -10,9 +10,9 @@ include TidBits::Options::Configurable
 
 # Note that overriding options only works once for each progname
 #
-def self.get( progname, opts = {} )
+def self.get( progname, options = {} )
 
-	@@instance[ progname ] || @@instance[ progname ] = self.new( progname, opts )
+	@@instance[ progname ] || @@instance[ progname ] = self.new( progname, options )
 
 end
 
@@ -55,11 +55,11 @@ end
 
 
 private
-def initialize( progname, opts )
+def initialize( progname, options )
 
 	@config  = Config.get
 	userOpts = @config.userset( :feedback ) || {}
-	userOpts.recursiveMerge! opts
+	userOpts.recursiveMerge! options
 
 	setupOptions( @config.defaults( :feedback ), userOpts )
 

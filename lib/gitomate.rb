@@ -2,6 +2,7 @@ require 'pp'
 require 'logger'
 require 'net/ssh'
 require 'rugged'
+require 'byebug'
 
 require_relative '../ext/git/lib/git'
 

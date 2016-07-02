@@ -1,75 +1,151 @@
 # DO NOT MAKE CHANGES TO THIS FILE. THEY WILL BE OVERWRITTEN BY UPDATES.
 #
-# use conf.d/yourconf.yml
-# configuration files in conf.d will be loaded in alphabetical order with later files
+# use /etc/gitomate.d/yourconf.yml
+# configuration files in /etc/gitomate.d/ will be loaded in alphabetical order with later files
 # overriding options set in earlier files. Note that hashes will be merged, but that
 # arrays (eg. 'gitusers' or 'repos') will be overwritten.
 #
+# The root of the configuration determines profiles:
+# This is the default profile, you should put this in your own files as well.
+# Next you can have sections that have differently named profiles, which means you can call gitomate
+# to temporarily change things. Eg. Have a profile that sets permissions to allow phpMyAdmin or wordpress updates.
+#
+# You can invoke a profile as `gitomate sycn --profile=example` which is included with the software.
+# If the profile option is ommitted, profile default will be run. All profiles will always inherit from default.
+#
+# @param String|Array<String> The directories where gitomate configuration is going to be read from.
+#                             You can also specify files instead of directories.
+#
+# For directories, the files inside need to have extension .yml and not be dotfiles (begin with a dot)
+# in order to be taken into account.
+#
+# If you specify files directly, this restriction is disregarded.
+#
+# <installDir>/conf will always be read first.
+#
+include: /etc/gitomate.d
 
-feedback:
+default:
 
-  logFile : gitomate.log
-  logDir  : /var/log/gitomate
-  keep    : 10                   # keep at most 10 rotated logfiles
-  maxSize : 1048576              # 1MB in bytes
-
-  # The different places to send feedback.
+  # You can inherit from another profile. 'default' is the root profile. It will always be the first in the inheritance
+  # chain and will inherit from nothing.
   #
-  # The different possible values for logLevel are: :DEBUG, :INFO, :WARN, :ERROR, :FATAL
+  # Technically, all configuration files are parsed, with later values overriding earlier ones. Next profile
+  # inheritance is looked at. If you have chosen a profile other than default, it's inherit property is checked.
+  # If it is empty, it inherits just from default.
   #
-  outputs :
+  # If it points to another profile, then that profile is resolved, after which your profile will override values
+  # from the super profile.
+  #
+  # Inheriting from an unexisting profile or creating circular dependencies will make the software bail out.
+  #
+  # Different profiles will only inherit from default unless you specify inherit as shown here. Multiple inheritance is
+  # not supported.
+  #
+  # inherit: otherProfile
 
-    # feedback goes to the logFile specified in this section
+  # Values in this key will always be written from the default profile. They cannot be overridden in a different profile.
+  # The install operation will also ignore the profile flag on the command line.
+  #
+  install:
+
+    # @param String|Array<String> A symlink to the binary will be made in these directories.
     #
-    file:
+    binDirs : /usr/local/bin
 
-      enabled : true
-      logLevel: :DEBUG
 
-    STDERR:
+  feedback:
 
-      enabled : true
-      logLevel: :DEBUG
+    logFile : gitomate.log
+    logDir  : /var/log/gitomate
+    keep    : 10                   # keep at most 10 rotated logfiles
+    maxSize : 1048576              # 1MB in bytes
 
-    # Beware of enabling feedback to STDOUT, as the git protocol uses STDOUT. That means that things will break
-    # with not so obvious error messages if this is used in git hooks and gitolite triggers.
+    # The different places to send feedback.
     #
-    STDOUT:
+    # The different possible values for logLevel are: :DEBUG, :INFO, :WARN, :ERROR, :FATAL
+    #
+    outputs :
 
-      enabled : false
-      logLevel: :WARN
+      # feedback goes to the logFile specified in this section
+      #
+      file:
+
+        enabled : true
+        logLevel: :DEBUG
+
+      STDERR:
+
+        enabled : true
+        logLevel: :DEBUG
+
+      # Beware of enabling feedback to STDOUT, as the git protocol uses STDOUT. That means that things will break
+      # with not so obvious error messages if this is used in git hooks and gitolite triggers.
+      #
+      STDOUT:
+
+        enabled : false
+        logLevel: :WARN
 
 
-# These are defaults for every repository. In the repos section, if you ommit these keys, these defaults
-# will be used. You can override these defaults in conf.d
-#
-repo:
-
-  remote   : gitolite
-  branch   : master
-  track    : gitolite/master
-  gituser  : gitcontent
-
-  # This is a placeholder, just to say that if you don't specify a remoteUrl, this will be the defaults
-  # %name% stands for the last part of the path, note that path does not have a default.
+  # These are defaults for every repository. In the repos section, if you ommit these keys, these defaults
+  # will be used. You can override these defaults in conf.d
   #
-  remoteUrl: '%gituser%@localhost:%name%'
+  repo:
+
+    branch   : master
+    track    : gitolite/master
+    gituser  : gitcontent
+
+    # This is the name for the remote
+    #
+    remote   : gitolite
+
+    # This is a placeholder, just to say that if you don't specify a remoteUrl, this will be the defaults
+    # %name% stands for the last part of the path, note that path does not have a default.
+    #
+    remoteUrl: '%gituser%@localhost:%name%'
+
+    pathOwner: gitcontent
+    pathGroup: php
+
+    # Owner overrides
+    #
+    # owner:
+      #
+      # '.gitignore' : gitcontent:gitcontent
+
+    # The default permissions
+    #
+    pathDirPerms: 0755
+    pathFilePerms: 644
+
+    # Permission overrides
+    #
+    # perm:
+      #
+      # '.gitignore'         : 600 # eg. www-data has no business with these files
+      # '**readme.txt'       : 600
+      #
+      # neither php or apache need listings, but php needs to put uploaded files and apache needs to serve them
+      #
+      # 'wp-content/uploads/': 731
 
 
-# The list of repositories that gitomate manages. Must be an array. Defaults to an empty array.
-#
-repos   : []
+  # The list of repositories that gitomate manages. Must be an array. Defaults to an empty array.
+  #
+  repos   : []
 
 
-# The different gitusers that gitomate interacts with. Must be an array. You could have different ones
-# for example if you want to use etckeeper with gitolite to manage your server configuration
-# but want a different gitolite user which does not have root privileges for your user content
-# (eg. websites)
-#
-gitusers:
+  # The different gitusers that gitomate interacts with. Must be an array. You could have different ones
+  # for example if you want to use etckeeper with gitolite to manage your server configuration
+  # but want a different gitolite user which does not have root privileges for your user content
+  # (eg. websites)
+  #
+  gitusers:
 
-  - gitetc
-  - gitcontent
+    - gitetc
+    - gitcontent
 
 
 

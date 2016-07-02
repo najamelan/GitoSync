@@ -1,0 +1,15 @@
+example:
+
+  repos:
+
+    - path       : /etc
+      gituser    : gitetc
+      remoteUrl  : gitetc@localhost:etc
+
+    - path       : /test
+
+    - path       : /tmp
+      remoteUrl  : gitcontent@localhost:tmp
+
+    - path       : /home/gitetc
+      remoteUrl  : gitetc@localhost:homedir
