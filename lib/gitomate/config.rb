@@ -5,13 +5,14 @@ class Config
 
 include TidBits::Options::Configurable
 
-@@instance    = nil
+@@instance = nil
 
 
 
 def self.get( profile = 'default', files = [] )
 
-	@@instance || @@instance = self.new( profile, files )
+	@@instance or @@instance = self.new( profile, files )
+	@@instance.dup
 
 end
 

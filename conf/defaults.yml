@@ -52,6 +52,7 @@ default:
     # @param String|Array<String> A symlink to the binary will be made in these directories.
     #
     binDirs : /usr/local/bin
+    confDirs: /etc/gitomate.d
 
 
   feedback:

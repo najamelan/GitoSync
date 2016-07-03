@@ -28,9 +28,14 @@ def initialize( *args )
 	pp "Using profile #{options[ :profile ]}"
 
 
-	@config  = ::Gitomate::Config.get( options[ :profile ] )
-	@binDir  = @config.options( :install, :binDir    )
-	@confDir = @config.options( :install, :configDir )
+	@config  = ::Gitomate::Config  .get( options[ :profile ] )
+	@log     = ::Gitomate::Feedback.get( 'Thorfile', @config )
+
+	@binDirs  = @config.options( :install, :binDirs   )
+	@binDirs.is_a?( Array ) or @binDirs = [ @binDirs ]
+
+	@confDirs = @config.options( :install, :confDirs )
+	@confDirs.is_a?( Array ) or @confDirs = [ @confDirs ]
 
 end
 
@@ -43,21 +48,26 @@ def install
 	begin
 
 		here = Rush[ File.dirname( __FILE__ ) ]
-
-
 		bins = here[ 'bin/*' ]
 
 		bins.each do |bin|
 
-			chmod bin.to_s, 755
-			bin.symlink @binDir, force: true
+			@binDirs.each do |dir|
 
+				chmod bin.to_s, 755
+				bin.symlink dir, force: true
+
+			end
 		end
 
 
-		conf  = Rush::Dir.new( @confDir )
+		@confDirs.each do |dir|
 
-		conf.exists? or conf.create
+			conf  = Rush::Dir.new( dir )
+
+			conf.exists? or conf.create
+
+		end
 
 
 	rescue Errno::EACCES

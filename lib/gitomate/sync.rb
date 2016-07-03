@@ -5,17 +5,17 @@ class Sync
 
 include TidBits::Options::Configurable
 
-def initialize( default, userOpts = {} )
+def initialize( config, default, userOpts = {} )
 
 	setupOptions( default, userOpts )
 
-	@log   = Feedback.get( 'Sync  ' )
+	@log   = Feedback.get( 'Sync  ', config )
 	@repos = []
 
 	options( :repos ).each do | repo |
 
 		@log.debug "Creating repo object for repo: #{repo[ :path ]}"
-		@repos << Repo.new( options( :repo ), repo )
+		@repos << Repo.new( config, repo )
 
 	end
 

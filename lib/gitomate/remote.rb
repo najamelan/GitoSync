@@ -4,13 +4,13 @@ class  Remote
 
 include TidBits::Options::Configurable
 
-def initialize( remote, default, userOpts = {} )
+def initialize( config, rug, default, userOpts = {} )
 
 	setupOptions( default, userOpts )
 
-	@log = Feedback.get( 'Remote' )
+	@log = Feedback.get( 'Remote', config )
 
-	@rug       = remote
+	@rug       = rug
 	@remoteUrl = remoteUrl
 
 	@user, @host, @repoName = parseUrl

@@ -19,13 +19,14 @@ attr_reader :paths
 
 
 
-def initialize( default = {}, userOpts = {} )
+def initialize( config, userOpts = {} )
 
 	super()
 
-	setupOptions( default, userOpts )
+	setupOptions( config.options( :repo ), userOpts )
 
-	@log     = Feedback.get( self.class )
+	@config  = config
+	@log     = Feedback.get( 'Repo   ', @config )
 	@path    = Rush::Dir.new options[ :path ]
 	@paths   = @path.to_s
 
@@ -41,7 +42,7 @@ def initialize( default = {}, userOpts = {} )
 		#
 		if @remotes[ options( :remote ) ]
 
-			@remote = Remote.new( @remotes[ options( :remote ) ], defaults, userset )
+			@remote = Remote.new( @config, @remotes[ options( :remote ) ], defaults, userset )
 
 		else
 

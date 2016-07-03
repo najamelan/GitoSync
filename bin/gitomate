@@ -38,7 +38,7 @@ def initialize( *args )
 
 	super
 	@config = Config  .get( options[ :profile ] )
-	@log    = Feedback.get( 'bin/gitomate' )
+	@log    = Feedback.get( 'bin/gitomate', @config )
 
 	@log.info 'loading gitomate'
 
@@ -61,7 +61,7 @@ desc 'status', 'Test the system for compliance with the configuration and report
 
 def status
 
-	@sync = Sync.new( @config.defaults, @config.userset )
+	@sync = Sync.new( @config, @config.defaults, @config.userset )
 
 	@sync.sync
 	# @log.debug @repos.to_yaml
