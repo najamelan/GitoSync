@@ -134,11 +134,11 @@ desc 'test', 'Run the unit tests for Gitomate. This will install the application
 
 def test
 
-	# invoke :install
+	invoke :install
 
 	require_relative 'test/run'
 
-	# ::Gitomate::TestSuite.run
+	::Gitomate::TestSuite.run
 
 end
 
