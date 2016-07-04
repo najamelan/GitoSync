@@ -14,7 +14,7 @@ def initialize( config, rug, default, userOpts = {} )
 	@remoteUrl = remoteUrl
 
 	@user, @host, @repoName = parseUrl
-	@log.debug "parsed url - user: #{@user}, host: #{@host}, repoName: #{@repoName}"
+	# @log.debug "parsed url - user: #{@user}, host: #{@host}, repoName: #{@repoName}"
 
 	@sshConfig  = Net::SSH::Config.for 'localhost'
 	@privateKey = @sshConfig[ :keys ][ 0 ]

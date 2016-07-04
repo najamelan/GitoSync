@@ -14,7 +14,7 @@ def initialize( config, default, userOpts = {} )
 
 	options( :repos ).each do | repo |
 
-		@log.debug "Creating repo object for repo: #{repo[ :path ]}"
+		# @log.debug "Creating repo object for repo: #{repo[ :path ]}"
 		@repos << Repo.new( config, repo )
 
 	end
