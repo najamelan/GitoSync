@@ -28,8 +28,8 @@ def initialize( **opts )
 
 	super( Fact.config.options( :Facts, :Path ), opts )
 
-	@log  = Feedback.get 'Facts::Path', Fact.config
-	@info = { path: options( :path ) }
+	@log           = Feedback.get 'Facts::Path', Fact.config
+	@info[ :path ] = options :path
 
 end
 
