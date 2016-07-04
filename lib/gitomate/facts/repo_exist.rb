@@ -22,6 +22,8 @@ def initialize( **opts )
 	@repo = options( :repo )
 	@log  = Feedback.get 'Facts::RepoExist', Fact.config
 
+	dependOn( Path, path: @repo.path.to_s, type: 'directory' )
+
 end
 
 
