@@ -158,7 +158,7 @@ default:
       mandatory  : [ path ]
 
 
-    RepoExist:
+    Repo:
 
       initialized: true
       mandatory  : [ repo ]

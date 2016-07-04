@@ -8,7 +8,7 @@ module Facts
 # repo*       : A Gitomate::Repository object
 # initialized : boolean (default=true)
 #
-class RepoExist < Facts::Fact
+class Repo < Facts::Fact
 
 
 attr_reader :repo
@@ -17,7 +17,7 @@ attr_reader :repo
 
 def initialize( **opts )
 
-	super( Fact.config.options( :Facts, :RepoExist ), opts )
+	super( Fact.config.options( :Facts, :Repo ), opts )
 
 	@repo = options( :repo )
 	@log  = Feedback.get 'Facts::RepoExist', Fact.config
@@ -92,6 +92,6 @@ end
 
 
 
-end # class  RepoExist
+end # class  Repo
 end # module Facts
 end # module Gitomate

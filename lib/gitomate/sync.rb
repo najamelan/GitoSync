@@ -48,19 +48,10 @@ def sync( dryRun = true )
 			Facts::Fact.config = @config
 
 
-			repo.addFact(                                         \
-			                                                      \
-				   :repoExist                                      \
-                                                               \
-				,  Facts::RepoExist.new(                           \
-				                                                   \
-						  repo:   repo                               \
-						, dependOn: repo.fact( :pathIsDir )            \
-					)                                               \
-                                                               \
-			)
+			repo.addFact( :repoExist,  Facts::Repo.new(  repo:   repo  ) )
 
-
+			# createPath
+			# initRepo
 			# # createWorkingDir
 			# # pathPermissions
 			# setRemote
