@@ -55,7 +55,7 @@ def sync( dryRun = true )
 				,  Facts::RepoExist.new(                           \
 				                                                   \
 						  repo:   repo                               \
-						, depend: repo.fact( :pathIsDir )            \
+						, dependOn: repo.fact( :pathIsDir )            \
 					)                                               \
                                                                \
 			)

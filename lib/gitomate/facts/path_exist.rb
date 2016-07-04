@@ -15,9 +15,9 @@ attr_reader :path
 
 
 
-def initialize( depend: [], **opts )
+def initialize( **opts )
 
-	super( Fact.config.options( :Facts, :PathExist ), opts, depend )
+	super( Fact.config.options( :Facts, :PathExist ), opts )
 
 	@path = options( :path )
 	@log  = Feedback.get 'Facts::PathExist', Fact.config

@@ -13,12 +13,12 @@ cattr_accessor :config, instance_reader: false
 
 
 
-def initialize( default, runTime, depend )
+def initialize( default, runTime )
 
 	setupOptions( default, runTime )
 
-	@depend     = *depend
 	@mustDepend = *options( :mustDepend )
+	@depend     = *options( :dependOn   )
 	@mandatory  =  options( :mandatory  ) || [] # We don't splat here, so we can test nested keys
 
 	requireOptions

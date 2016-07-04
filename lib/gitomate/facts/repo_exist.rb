@@ -15,9 +15,9 @@ attr_reader :repo
 
 
 
-def initialize( depend: [], **opts )
+def initialize( **opts )
 
-	super( Fact.config.options( :Facts, :RepoExist ), opts, depend )
+	super( Fact.config.options( :Facts, :RepoExist ), opts )
 
 	@repo = options( :repo )
 	@log  = Feedback.get 'Facts::RepoExist', Fact.config
