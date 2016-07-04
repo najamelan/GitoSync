@@ -9,12 +9,9 @@ include TidBits::Options::Configurable
 
 attr_reader :depends, :happy, :name, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed
 
+cattr_accessor :config, instance_reader: false
 
-class << self
 
-  attr_accessor :config
-
-end
 
 
 def initialize( default = {}, runTime = {}, depend )

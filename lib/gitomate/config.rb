@@ -51,7 +51,7 @@ def initialize( profile, fromCmdLine = [] )
 
 	# Override the userCfg with the extras
 	#
-	userCfg.recursiveMerge! extras
+	userCfg.deep_merge! extras
 
 
 	# Merges them into options
@@ -80,7 +80,7 @@ def deepParseFiles( files )
 	config = parseFiles files
 	more   = config.dig :include
 
-	more and config.recursiveMerge! deepParseFiles( more )
+	more and config.deep_merge! deepParseFiles( more )
 	config
 
 end
@@ -124,7 +124,7 @@ def parseFiles( files )
 
 		if File.directory?( file )
 
-			config.recursiveMerge! parseFiles( file )
+			config.deep_merge! parseFiles( file )
 			next
 
 		end
@@ -148,7 +148,7 @@ def parseFiles( files )
 		end
 
 
-		config.recursiveMerge! loaded
+		config.deep_merge! loaded
 		@parsedFiles << file
 
 	end
@@ -217,9 +217,9 @@ def mergeProfiles
 		# We will extract only the content of the profiles, without keeping the rest, so in the end
 		# we will only keep the currently running profile. The original will be stored in @allDefaults, etc.
 		#
-		@defaults.recursiveMerge!( @allDefaults.dig( parent ) || {} )
-		@userset .recursiveMerge!( @allUserset .dig( parent ) || {} )
-		@options .recursiveMerge!( @allOptions .dig( parent ) || {} )
+		@defaults.deep_merge!( @allDefaults.dig( parent ) || {} )
+		@userset .deep_merge!( @allUserset .dig( parent ) || {} )
+		@options .deep_merge!( @allOptions .dig( parent ) || {} )
 
 	end
 
