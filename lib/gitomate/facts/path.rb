@@ -6,6 +6,7 @@ module Facts
 # Options (* means mandatory)
 #
 # path*      : string
+# exist      : boolean (default=true)
 # type       : "file", "directory", "characterSpecial", "blockSpecial", "fifo", "link", "socket", or "unknown"
 #              (default=file)
 # symlink    : boolean
@@ -27,10 +28,8 @@ def initialize( **opts )
 
 	super( Fact.config.options( :Facts, :Path ), opts )
 
-	@path = options( :path )
 	@log  = Feedback.get 'Facts::Path', Fact.config
-
-	dependOn( PathExist, path: @path, create: options( :type ) )
+	@info = { path: options( :path ) }
 
 end
 
@@ -40,15 +39,24 @@ def analyze( update = false )
 
 	super == 'return'  and  return @analyzePassed
 
-	stat = File.stat path
+	@info[ :exist ] = File.exists? @info[ :path ]
 
-	@symlink = stat.symlink?
-	@type    = stat.ftype
-	@mode    = stat.mode
-	@uid     = stat.uid
-	@gid     = stat.gid
-	@owner   = Etc.getpwuid( @uid ).name
-	@group   = Etc.getgrgid( @gid ).name
+
+	# These make no sense if the file doesn't exist
+	#
+	if @info[ :exist ]
+
+		stat = File.stat @info[ :path ]
+
+		@info[ :symlink ] = stat.symlink?
+		@info[ :type    ] = stat.ftype
+		@info[ :mode    ] = stat.mode
+		@info[ :uid     ] = stat.uid
+		@info[ :gid     ] = stat.gid
+		@info[ :owner   ] = Etc.getpwuid( @info[ :uid ] ).name
+		@info[ :group   ] = Etc.getgrgid( @info[ :gid ] ).name
+
+	end
 
 	@analyzed      = true
 	@analyzePassed = true
@@ -65,15 +73,26 @@ def check( update = false )
 	@checkPassed = true
 
 
+	if  options( :exist )  !=  @info[ :exist ]
+
+		options( :exist ) and @log.warn "#{@info[ :path ].inspect} does not exist."
+		options( :exist ) or  @log.warn "#{@info[ :path ].inspect} exists but it shouldn't."
+
+		@checked = true
+		return @checkPassed = false
+
+	end
+
+
 	options.each do | key, target |
 
 		case key
 
 		when :type
 
-			if target != @type
+			if target != @info[ :type ]
 
-				@log.warn "[#{@path}] should be a #{target.inspect} but is a #{@type.inspect}"
+				@log.warn "[#{@info[ :path ]}] should be a #{target.inspect} but is a #{@type.inspect}"
 				@checkPassed = false
 
 			end

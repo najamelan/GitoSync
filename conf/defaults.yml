@@ -151,15 +151,9 @@ default:
 
   Facts:
 
-    PathExist:
-
-      exist     : true
-      create    : file
-      mandatory : [ path ]
-
-
     Path:
 
+      exist      : true
       type       : file
       mandatory  : [ path ]
 
