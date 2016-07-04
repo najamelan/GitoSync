@@ -13,3 +13,6 @@ example:
 
     - path       : /home/gitetc
       remoteUrl  : gitetc@localhost:homedir
+
+    - path       : /doesnotexist
+      remoteUrl  : gitetc@localhost:homedir
