@@ -47,32 +47,6 @@ def sync( dryRun = true )
 
 			Facts::Fact.config = @config
 
-			repo.addFact(                                         \
-			                                                      \
-				   :pathExist                                      \
-                                                               \
-				,  Facts::PathExist.new(                           \
-				                                                   \
-						  path:    o[ :path ]                        \
-						, create: 'directory'                        \
-					)                                               \
-                                                               \
-			)
-
-
-			repo.addFact(                                         \
-			                                                      \
-				   :pathIsDir                                      \
-                                                               \
-				,  Facts::Path.new(                                \
-				                                                   \
-						  path:   o[ :path ]                         \
-						, type:   'directory'                        \
-						, depend: repo.fact( :pathExist )            \
-					)                                               \
-                                                               \
-			)
-
 
 			repo.addFact(                                         \
 			                                                      \

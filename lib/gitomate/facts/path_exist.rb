@@ -22,6 +22,8 @@ def initialize( depend: [], **opts )
 	@path = options( :path )
 	@log  = Feedback.get 'Facts::PathExist', Fact.config
 
+	dependOn( Path, path: @path, type: 'directory' )
+
 end
 
 

@@ -30,6 +30,8 @@ def initialize( depend: [], **opts )
 	@path = options( :path )
 	@log  = Feedback.get 'Facts::Path', Fact.config
 
+	dependOn( PathExist, path: @path, create: options( :type ) )
+
 end
 
 
@@ -93,6 +95,7 @@ def fix()
 	raise "Note implemented"
 
 end
+
 
 
 end # class  Path

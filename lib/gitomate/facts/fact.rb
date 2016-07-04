@@ -163,6 +163,13 @@ end
 
 
 
+def dependOn( klass, *args )
+
+	@depend.push klass.new( *args )
+
+end
+
+
 end # class  Fact
 end # module Facts
 end # module Gitomate
