@@ -153,19 +153,23 @@ default:
 
     PathExist:
 
-      exist  : true
-      create : file
+      exist     : true
+      create    : file
+      mandatory : [ path ]
 
 
     Path:
 
       mustDepend : Gitomate::Facts::PathExist
+      type       : file
+      mandatory  : [ path ]
 
 
     RepoExist:
 
       mustDepend : Gitomate::Facts::Path
       initialized: true
+      mandatory  : [ repo ]
 
 
 

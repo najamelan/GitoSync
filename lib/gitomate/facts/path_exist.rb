@@ -3,9 +3,10 @@ module Gitomate
 module Facts
 
 
-# Options
+# Options (* means mandatory)
 #
-# exist      : boolean
+# path* : string
+# exist : boolean (default=true)
 #
 class PathExist < Facts::Fact
 

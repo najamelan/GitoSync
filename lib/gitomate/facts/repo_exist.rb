@@ -3,9 +3,10 @@ module Gitomate
 module Facts
 
 
-# Options
+# Options (* means mandatory)
 #
-# initialized : boolean
+# repo*       : A Gitomate::Repository object
+# initialized : boolean (default=true)
 #
 class RepoExist < Facts::Fact
 

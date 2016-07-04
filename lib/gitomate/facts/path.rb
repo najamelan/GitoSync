@@ -3,15 +3,18 @@ module Gitomate
 module Facts
 
 
-# Options
+# Options (* means mandatory)
 #
+# path*      : string
 # type       : "file", "directory", "characterSpecial", "blockSpecial", "fifo", "link", "socket", or "unknown"
+#              (default=file)
 # symlink    : boolean
 # mode       : integer
 # owner      : 'owner'
 # group      : 'group'
+# mtime      :
 # hashAlgo   : :SHA512
-# hash       : string
+# hash       : string   the hash of the content
 #
 class Path < Facts::Fact
 
@@ -90,7 +93,6 @@ def fix()
 	raise "Note implemented"
 
 end
-
 
 
 end # class  Path

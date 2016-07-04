@@ -13,14 +13,15 @@ cattr_accessor :config, instance_reader: false
 
 
 
-
-def initialize( default = {}, runTime = {}, depend )
+def initialize( default, runTime, depend )
 
 	setupOptions( default, runTime )
 
 	@depend     = *depend
 	@mustDepend = *options( :mustDepend )
+	@mandatory  =  options( :mandatory  ) || [] # We don't splat here, so we can test nested keys
 
+	requireOptions
 	requireDepends
 
 	reset
@@ -37,6 +38,17 @@ def reset
 	@analyzePassed = false
 	@checkPassed   = false
 	@fixPassed     = false
+
+end
+
+
+def requireOptions
+
+	@mandatory.each do |key|
+
+		options( key ) or raise "#{self.class} must have the following key: #{key}."
+
+	end
 
 end
 

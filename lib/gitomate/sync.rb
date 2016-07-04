@@ -87,9 +87,6 @@ def sync( dryRun = true )
 			)
 
 
-			# repo.addFact( :initRepo , Facts::RepoInitialized.new( @config, { repo: repo }, repo.fact( :pathIsDir ) ) )
-
-			# initRepo
 			# # createWorkingDir
 			# # pathPermissions
 			# setRemote
