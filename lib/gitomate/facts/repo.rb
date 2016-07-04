@@ -20,7 +20,6 @@ def initialize( **opts )
 	super( Fact.config.options( :Facts, :Repo ), opts )
 
 	@repo = options( :repo )
-	@log  = Feedback.get 'Facts::RepoExist', Fact.config
 
 	dependOn( Path, path: @repo.paths, type: 'directory' )
 

@@ -12,6 +12,7 @@ include TidBits::Options::Configurable
 #
 def self.get( progname, config )
 
+	progname.remove!( /Gitomate::/ )
 	@@instance[ progname ] || @@instance[ progname ] = self.new( progname, config )
 
 end
