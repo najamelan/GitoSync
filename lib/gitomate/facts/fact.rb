@@ -163,9 +163,13 @@ end
 
 
 
-def dependOn( klass, *args )
+def dependOn( klass, **opts )
 
-	@depend.push klass.new( *args )
+	if @depend.none? { |dep| dep.userset.superset? opts }
+
+		@depend.push klass.new( **opts )
+
+	end
 
 end
 
