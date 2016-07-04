@@ -26,7 +26,7 @@ def initialize( config, userOpts = {} )
 	@config  = config
 	@log     = Feedback.get( 'Repo   ', @config )
 	@path    = Rush::Dir.new options[ :path ]
-	@paths   = @path.to_s
+	@paths   = options[ :path ]
 	@facts  = {}
 
 

@@ -47,13 +47,13 @@ def check( update = false )
 
 	if !options( :exist )  &&  @exist
 
-		@log.warn "[#{@path}] exists but it shouldn't."
+		@log.warn "#{@path.inspect} exists but it shouldn't."
 		@checkPassed = false
 
 
 	elsif options( :exist )  &&  !@exist
 
-		@log.warn "[#{@path}] does not exist."
+		@log.warn "#{@path.inspect} does not exist."
 		@checkPassed = false
 
 	end

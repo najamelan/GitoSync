@@ -46,7 +46,7 @@ def requireOptions
 
 	@mandatory.each do |key|
 
-		options( key ) or raise "#{self.class} must have the following key: #{key}."
+		options( key ) or raise "#{self.class.name.inspect} must have the following key: #{key.inspect}."
 
 	end
 
@@ -59,7 +59,7 @@ def requireDepends
 
 		if @depend.none? { |dep| dep.class.name == depend }
 
-			raise "#{self.class} must depend on at least one #{depend}."
+			raise "#{self.class.name.inspect} must depend on at least one #{depend.inspect}."
 
 		end
 

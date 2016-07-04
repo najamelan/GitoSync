@@ -64,6 +64,7 @@ def check( update = false )
 
 	@checkPassed = true
 
+
 	options.each do | key, target |
 
 		case key
@@ -72,7 +73,7 @@ def check( update = false )
 
 			if target != @type
 
-				@log.warn "[#{@path}] should be a #{target} but is a #{@type}"
+				@log.warn "[#{@path}] should be a #{target.inspect} but is a #{@type.inspect}"
 				@checkPassed = false
 
 			end
@@ -80,6 +81,7 @@ def check( update = false )
 		end
 
 	end
+
 
 	@checked = true
 	@checkPassed

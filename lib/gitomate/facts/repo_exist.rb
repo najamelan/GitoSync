@@ -22,7 +22,7 @@ def initialize( **opts )
 	@repo = options( :repo )
 	@log  = Feedback.get 'Facts::RepoExist', Fact.config
 
-	dependOn( Path, path: @repo.path.to_s, type: 'directory' )
+	dependOn( Path, path: @repo.paths, type: 'directory' )
 
 end
 
@@ -59,14 +59,14 @@ def check( update = false )
 
 				if !target
 
-					@log.warn "[#{@repo.path}] is a git repo but it shouldn't."
+					@log.warn "#{@repo.paths.inspect} is a git repo but it shouldn't."
 					@checkPassed = false
 
 				end
 
 			elsif target
 
-				@log.warn "[#{@repo.path}] is not a git repo."
+				@log.warn "#{@repo.paths.inspect} is not a git repo."
 				@checkPassed = false
 
 			end
