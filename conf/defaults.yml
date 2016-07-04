@@ -149,5 +149,24 @@ default:
     - gitcontent
 
 
+  Facts:
+
+    PathExist:
+
+      exist  : true
+      create : file
+
+
+    Path:
+
+      mustDepend : Gitomate::Facts::PathExist
+
+
+    RepoExist:
+
+      mustDepend : Gitomate::Facts::Path
+      initialized: true
+
+
 
 

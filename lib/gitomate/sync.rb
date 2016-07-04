@@ -9,6 +9,7 @@ def initialize( config, default, userOpts = {} )
 
 	setupOptions( default, userOpts )
 
+	@config = config
 	@log   = Feedback.get( 'Sync  ', config )
 	@repos = []
 
@@ -37,26 +38,74 @@ def sync( dryRun = true )
 	end
 
 
-	@repos.each do | repo |
+	@repos.each_with_index do | repo, key |
 
 		@repo = repo
+		o     = repo.options
 
 		begin
 
-			createPath       or next
-			initRepo         or next
-			# createWorkingDir or next
-			# pathPermissions
-			setRemote        # or next
-			connectRemote    or next
-			canWriteRemote
-			onRightBranch
-			workingDirClean
-			# installHooks
-			submodulesClean
-			syncSubmodules
-			syncWithBare
-			repoPermissions
+			Facts::Fact.config = @config
+
+			repo.addFact(                                         \
+			                                                      \
+				   :pathExist                                      \
+                                                               \
+				,  Facts::PathExist.new(                           \
+				                                                   \
+						  path:    o[ :path ]                        \
+						, create: 'directory'                        \
+					)                                               \
+                                                               \
+			)
+
+
+			repo.addFact(                                         \
+			                                                      \
+				   :pathIsDir                                      \
+                                                               \
+				,  Facts::Path.new(                                \
+				                                                   \
+						  path:   o[ :path ]                         \
+						, type:   'directory'                        \
+						, depend: repo.fact( :pathExist )            \
+					)                                               \
+                                                               \
+			)
+
+
+			repo.addFact(                                         \
+			                                                      \
+				   :repoExist                                      \
+                                                               \
+				,  Facts::RepoExist.new(                           \
+				                                                   \
+						  repo:   repo                               \
+						, depend: repo.fact( :pathIsDir )            \
+					)                                               \
+                                                               \
+			)
+
+
+			# repo.addFact( :initRepo , Facts::RepoInitialized.new( @config, { repo: repo }, repo.fact( :pathIsDir ) ) )
+
+			# initRepo
+			# # createWorkingDir
+			# # pathPermissions
+			# setRemote
+			# connectRemote
+			# canWriteRemote
+			# onRightBranch
+			# workingDirClean
+			# # installHooks
+			# submodulesClean
+			# # syncSubmodules
+			# pullRemote
+			# pushRemote
+			# repoPermissions
+			#
+
+			repo.checkAll
 
 		rescue => e
 
@@ -71,16 +120,22 @@ end
 
 
 
-def check( ok, warning, inform, &action )
+def check( ok, warning, inform, depends, &action )
 
-	ok and return true
+	if ok
+
+		@success[ caller_locations(1).first.label.to_sym ] = true
+		return true
+
+	end
+
 	@log.warn warning
 
 	@dryRun and return false
 
 	begin
 
-		action.call
+		action.call or return false
 
 	rescue => e
 
@@ -89,6 +144,7 @@ def check( ok, warning, inform, &action )
 
 	end
 
+	@success[ caller_locations(1).first.label.to_sym ] = true
 	return true
 
 end
@@ -113,6 +169,8 @@ end
 
 def createPath
 
+	Fact::Path.new( repo.options( :path ), @config.defaults, { exist: true, type: directory } )
+
 	check                                                                \
                                                                         \
 		  @repo.pathExists?                                               \
@@ -131,6 +189,8 @@ end
 
 
 def initRepo
+
+	@success[ :createPath ] or return false
 
 	check                                                                \
                                                                         \
@@ -152,6 +212,8 @@ end
 
 def setRemote
 
+	@success[ :initRepo ] or return false
+
 	check                                                                \
                                                                         \
 		  @repo.correctRemote?                                            \
@@ -171,6 +233,8 @@ end
 
 
 def connectRemote
+
+	@success[ :setRemote ] or return false
 
 	check                                                                \
                                                                         \
@@ -193,6 +257,8 @@ end
 
 def canWriteRemote
 
+	@success[ :connectRemote ] or return false
+
 	check                                                                \
                                                                         \
 		  @repo.canWriteRemote?                                               \
@@ -214,6 +280,8 @@ end
 
 def onRightBranch
 
+	@success[ :initRepo ] or return false
+
 	check                                                                \
                                                                         \
 		  @repo.onRightBranch?                                            \
@@ -233,6 +301,8 @@ end
 
 
 def workingDirClean
+
+	@success[ :onRightBranch ] or return false
 
 	check                                                                \
                                                                         \
@@ -291,9 +361,47 @@ end
 
 
 
-def syncWithBare
+def pullRemote
+
+	@success[ :connectRemote ] && @success[ :workingDirClean ] or return false
+
+	check                                                                \
+                                                                        \
+		  @repo.behind > 0                                                \
+		, "#{@repo.paths} is behind remote"                               \
+		, "Trying git pull fast forward only"                             \
+                                                                        \
+	                                                                     \
+	do
+
+		# Try to merge
+		# @log.warn "pull ff"
+		# try push --force
+
+	end
+
+end
 
 
+
+def pushRemote
+
+	@success[ :connectRemote ] && @success[ :workingDirClean ] or return false
+
+	check                                                                \
+                                                                        \
+		  @repo.ahead > 0                                                 \
+		, "#{@repo.paths} is ahead of remote."                            \
+		, "Trying git pull fast forward only"                             \
+                                                                        \
+	                                                                     \
+	do
+
+		# Try to merge
+		# @log.warn "push --force to sync remote"
+		# try push --force
+
+	end
 
 end
 

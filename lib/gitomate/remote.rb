@@ -4,12 +4,13 @@ class  Remote
 
 include TidBits::Options::Configurable
 
-def initialize( config, rug, default, userOpts = {} )
+def initialize( config, rug, git, default, userOpts = {} )
 
 	setupOptions( default, userOpts )
 
 	@log = Feedback.get( 'Remote', config )
 
+	@git       = git
 	@rug       = rug
 	@remoteUrl = remoteUrl
 
@@ -97,6 +98,14 @@ def parseUrl
 		return matches[1], matches[2], matches[3]
 
 	end
+
+end
+
+
+
+def fetch( branch )
+
+	@git.fetch( options( :remote ) )
 
 end
 
