@@ -4,7 +4,7 @@ class CliLogFormat < Logger::Formatter
 
 def call( severity, time, progname, msg )
 
-	"%5s [%s] %s\n" % [ severity, progname, msg2str( msg[ 0 ] ) ]
+	"%5s [%s] %s\n" % [ severity, progname, msg2str( msg.first ) ]
 
 end
 

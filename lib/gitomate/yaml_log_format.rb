@@ -4,7 +4,7 @@ class YamlLogFormat < Logger::Formatter
 
 def call( severity, time, progname, msg )
 
-	h = { 'severity ' => severity, 'time     ' => time.utc, 'component' => progname, 'message  ' => msg2str( msg[ 0 ] ) }
+	h = { 'severity ' => severity, 'time     ' => time.utc, 'component' => progname, 'message  ' => msg2str( msg.first ) }
 	alignColons( YAML.dump( h ) )
 
 end

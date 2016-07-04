@@ -17,7 +17,7 @@ def initialize( config, rug, default, userOpts = {} )
 	# @log.debug "parsed url - user: #{@user}, host: #{@host}, repoName: #{@repoName}"
 
 	@sshConfig  = Net::SSH::Config.for 'localhost'
-	@privateKey = @sshConfig[ :keys ][ 0 ]
+	@privateKey = @sshConfig[ :keys ].first
 	@publicKey  = "#{@privateKey}.pub"
 
 	@credentials = Rugged::Credentials::SshKey.new( username: @user, privatekey: @privateKey, publickey: @publicKey, passphrase: "" )
@@ -81,7 +81,7 @@ def remoteUrl
 	dummy = options( :remoteUrl )
 
 	dummy.gsub!( /%gituser%/, options( :gituser ) )
-	dummy.gsub!( /%name%/   , options( :path ).scan( /[^\/]+$/ )[ 0 ] )
+	dummy.gsub!( /%name%/   , options( :path ).scan( /[^\/]+$/ ).first )
 
 	@log.debug "Constructed remoteUrl: #{dummy}"
 	dummy
