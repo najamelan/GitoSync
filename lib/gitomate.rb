@@ -1,17 +1,23 @@
 require 'pp'
+require 'awesome_print'
 require 'logger'
 require 'net/ssh'
 require 'rugged'
 require 'byebug'
 
 require_relative '../ext/git/lib/git'
-
 require_relative 'tidbits/lib/tidbits'
-require_relative 'gitomate/config'
-require_relative 'gitomate/yaml_log_format'
-require_relative 'gitomate/cli_log_format'
-require_relative 'gitomate/feedback'
-require_relative 'gitomate/remote'
-require_relative 'gitomate/bareSSH'
-require_relative 'gitomate/repo'
-require_relative 'gitomate/sync'
+
+Dir[ "#{File.dirname( __FILE__ )}/gitomate/**/*.rb" ].sort.each do |source|
+
+	require_relative source
+
+end
+
+# AwesomePrint.defaults = {
+# 	indent:          3,      # Indent using 4 spaces.
+# 	raw:             false,   # Do not recursively format object instance variables.
+# 	sort_keys:       true,  # Do not sort hash keys.
+# 	new_hash_syntax: false,  # Use the JSON like syntax { foo: 'bar' }, when the key is a symbol
+# 	limit:           false,  # Limit large output for arrays and hashes. Set to a boolean or integer.
+# }
