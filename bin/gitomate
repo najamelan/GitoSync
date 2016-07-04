@@ -40,7 +40,7 @@ def initialize( *args )
 	@config = Config  .get( options[ :profile ] )
 	@log    = Feedback.get( 'bin/gitomate', @config )
 
-	@log.info 'loading gitomate'
+	# @log.info 'loading gitomate'
 
 end
 

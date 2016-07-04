@@ -66,8 +66,8 @@ def initialize( profile, fromCmdLine = [] )
 
 	# @@log ||= Feedback.get( 'Config' )
 
-	STDERR.puts "Parsed config files: #{@parsedFiles}"
-	STDERR.puts "Profile inheritance chain: #{@inheritance}"
+	# STDERR.puts "Parsed config files: #{@parsedFiles}"
+	# STDERR.puts "Profile inheritance chain: #{@inheritance}"
 
 	# pp options
 
