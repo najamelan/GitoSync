@@ -72,7 +72,7 @@ def check( update = false )
 	@checkPassed = true
 
 
-	if  options( :exist )  !=  @info[ :exist ]
+	if options( :exist ) != @info[ :exist ]
 
 		options( :exist ) and @log.warn "#{@info[ :path ].inspect} does not exist."
 		options( :exist ) or  @log.warn "#{@info[ :path ].inspect} exists but it shouldn't."

@@ -12,11 +12,13 @@ def initialize( config, default, userOpts = {} )
 	@config = config
 	@log   = Feedback.get( 'Sync  ', config )
 	@repos = []
+	@info  = { repos: {} }
 
 	options( :repos ).each do | repo |
 
 		# @log.debug "Creating repo object for repo: #{repo[ :path ]}"
-		@repos << Repo.new( config, repo )
+		# @repos << Repo.new( config, repo )
+		@info[ :repos ][ repo[ :path ] ] = {}
 
 	end
 
@@ -38,17 +40,26 @@ def sync( dryRun = true )
 	end
 
 
-	@repos.each_with_index do | repo, key |
+	options( :repos ).each do | repo |
 
-		@repo = repo
-		o     = repo.options
+		# @repo = repo
+		# o     = repo.options
 
 		begin
 
 			Facts::Fact.config = @config
 
+			path = repo[ :path ]
+			info = @info[ :repos ][ path ]
 
-			repo.addFact( :repoExist,  Facts::Repo.new(  repo:   repo  ) )
+			info[ :facts ] = {}
+			facts = info[ :facts ]
+
+			ap facts
+
+			info[ :facts ][ :exist        ] = Facts::Repo.new( path: path )
+			info[ :facts ][ :workDirClean ] = Facts::Repo.new( path: path, workDirClean: true )
+
 
 			# createPath
 			# initRepo
@@ -67,7 +78,7 @@ def sync( dryRun = true )
 			# repoPermissions
 			#
 
-			repo.checkAll
+			facts.each { | key, fact | fact.check }
 
 		rescue => e
 

@@ -4,6 +4,8 @@ require 'logger'
 require 'net/ssh'
 require 'rugged'
 require 'byebug'
+require 'English'
+require 'etc'
 
 require 'active_support'
 require 'active_support/core_ext/object/try'

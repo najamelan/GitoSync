@@ -95,7 +95,7 @@ default:
   repo:
 
     branch   : master
-    track    : gitolite/master
+    track    : master
     gituser  : gitcontent
 
     # This is the name for the remote
@@ -160,8 +160,9 @@ default:
 
     Repo:
 
-      initialized: true
-      mandatory  : [ repo ]
+      mandatory   : [ path ]
+      initialized : true
+
 
 
 

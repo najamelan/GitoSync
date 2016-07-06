@@ -5,8 +5,10 @@ module Facts
 
 # Options (* means mandatory)
 #
-# repo*       : A Gitomate::Repository object
-# initialized : boolean (default=true)
+# path*       : Path to the repository directory (workingDir with .git)
+# initialized : bool   (default=true)
+# branch      : string
+# workDirClean: bool
 #
 class Repo < Facts::Fact
 
@@ -19,9 +21,10 @@ def initialize( **opts )
 
 	super( Fact.config.options( :Facts, :Repo ), opts )
 
-	@repo = options( :repo )
+	@path = options( :path )
+	@repo = ::Gitomate::Repo.new( Fact.config, path: @path )
 
-	dependOn( Path, path: @repo.paths, type: 'directory' )
+	dependOn( Path, path: @path, type: 'directory' )
 
 end
 
@@ -31,7 +34,16 @@ def analyze( update = false )
 
 	super == 'return'  and  return @analyzePassed
 
-	@initialized   = @repo.valid?
+	info[ :initialized  ]   = @repo.valid?
+
+
+	if info[ :initialized ]
+
+		info[ :branch       ]   = @repo.branch
+		info[ :workDirClean ]   = @repo.workingDirClean?
+
+	end
+
 
 	@analyzed      = true
 	@analyzePassed = true
@@ -48,24 +60,37 @@ def check( update = false )
 	@checkPassed = true
 
 
+	if options( :initialized )  !=  @info[ :initialized ]
+
+		options( :initialized )  and  @log.warn "#{@repo.paths.inspect} is not a git repo."
+		options( :initialized )  or   @log.warn "#{@repo.paths.inspect} is a git repo but it shouldn't."
+
+		@checked = true
+		return @checkPassed = false
+
+	end
+
+
 	options.each do | key, target |
 
 		case key
 
-		when :initialized
 
-			if @initialized
+		when :branch
 
-				if !target
+			if @info[ :branch ] != target
 
-					@log.warn "#{@repo.paths.inspect} is a git repo but it shouldn't."
-					@checkPassed = false
+				@log.warn "#{@repo.paths.inspect} should be on branch #{target}, but is on #{info[:branch].inspect}."
+				@checkPassed = false
 
-				end
+			end
 
-			elsif target
 
-				@log.warn "#{@repo.paths.inspect} is not a git repo."
+		when :workDirClean
+
+			if @info[ :workDirClean ] != target
+
+				@log.warn "#{@repo.path.inspect} should have a clean working directory."
 				@checkPassed = false
 
 			end

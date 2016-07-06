@@ -21,7 +21,6 @@ def initialize( default, runTime )
 	@depend     = *options( :dependOn   )
 	@mandatory  =  options( :mandatory  ) || [] # We don't splat here, so we can test nested keys
 	@info       = {}
-
 	@log  = Feedback.get self.class.name, self.class.config
 
 	requireOptions

@@ -19,28 +19,23 @@ attr_reader :paths
 
 
 
-def initialize( config, userOpts = {} )
+def initialize( config, **userOpts )
 
 	setupOptions( config.options( :repo ), userOpts )
 
 	@config  = config
-	@log     = Feedback.get( 'Repo   ', @config )
-	@path    = Rush::Dir.new options[ :path ]
-	@paths   = options[ :path ]
-	@facts  = {}
-
+	@log     = Feedback.get( self.class.name, @config )
+	@path    = options[ :path ]
 
 	# Create a backend if the repo path exist and is a repo
 	#
 	begin
 
-		@rug      = Rugged::Repository.new( @paths )
+		@rug      = Rugged::Repository.new( @path )
+		@remotes  = @rug.remotes
 
-		@remotes  = @rug   .remotes
-		@branch   = @rug   .branches()[ options( :branch ) ]
-		@branch and @upBranch = @branch.upstream
+		@git      = Git::Base.open @path
 
-		@git      = Git::Base.open @path.to_s
 
 		# Create the remote if it exists in the repo
 		#
@@ -64,50 +59,8 @@ def initialize( config, userOpts = {} )
 end
 
 
-def addFact( name, check )
-
-	@facts[ name ] = check
-
-end
-
-
-def fact( name )
-
-	@facts[ name ]
-
-end
-
-
-def analyze( name )
-
-	@facts[ name ].analyze
-
-end
-
-
-def check( name )
-
-	@facts[ name ].check
-
-end
-
-
-def checkAll
-
-	@facts.each { |key, fact| fact.check }
-
-end
-
-
-def fix( name )
-
-	@facts[ name ].fix
-
-end
-
-
-def pathExists?() @path.exists? end
-def valid?	   () !!@rug        end
+def pathExists?() File.exist? @path end
+def valid?	   () !!@rug            end
 
 
 
@@ -151,9 +104,41 @@ end
 
 
 
+def branch
+
+	begin
+
+		@rug.head.name.remove( /refs\/heads\// )
+
+	rescue Rugged::ReferenceError => e
+
+		@log.warn "Could not find the reference HEAD points to in #{@path}"
+		@log.warn "Possibly a repository without commits."
+		@log.warn e
+		nil
+
+	end
+
+
+
+end
+
+
+
 def workingDirClean?()
 
-	@rug.diff_workdir( @rug.head.name ).size == 0
+	begin
+
+		@rug.diff_workdir( @rug.head.name ).size == 0
+
+	rescue Rugged::ReferenceError => e
+
+		@log.warn "Could not find the reference HEAD points to in #{@path}"
+		@log.warn "Possibly a repository without commits."
+		@log.warn e
+		nil
+
+	end
 
 end
 

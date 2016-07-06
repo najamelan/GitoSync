@@ -1,5 +1,6 @@
 require 'test/unit/testsuite'
 require 'test/unit/ui/console/testrunner'
+require_relative '../lib/gitomate'
 
 
 # Turn off test unit's auto runner for those using the gem
@@ -7,9 +8,11 @@ require 'test/unit/ui/console/testrunner'
 defined?( Test::Unit::AutoRunner ) and Test::Unit::AutoRunner.need_auto_run = false
 
 
-Dir.entries( File.dirname( __FILE__ ) ).
+Dir[ File.join( File.dirname( __FILE__ ), '*.rb' ) ].each do | file |
 
-	grep( /test.*\.rb/ ) { | file | require_relative file }
+	require_relative file
+
+end
 
 
 
@@ -21,13 +24,14 @@ def self.suite
 
 	suite =  Test::Unit::TestSuite.new( "Gitomate Unit Tests" )
 
-	suite << TestThorfile.suite
+	# suite << TestThorfile.suite
+	suite << TestGitolite.suite
 
 end
 
 
 
-def self.run
+def self.run( thorObject )
 
 	Test::Unit::UI::Console::TestRunner.run( self )
 
