@@ -3,9 +3,10 @@ require_relative 'helper'
 module Gitomate
 
 
-class TestGitolite < Test::Unit::TestCase
+class TestFactRepo < Test::Unit::TestCase
 
 @@helper = TestHelper.new
+@@tmp    = ''
 
 
 def self.startup
@@ -14,7 +15,6 @@ def self.startup
 
 end
 
-
 def self.shutdown
 
 	# TidBits::Susu.su( user: 'root' )
@@ -22,14 +22,26 @@ def self.shutdown
 end
 
 
-def test_connection
+def setup
 
-	`ssh #{@@helper.host} info`
-
-	assert_equal( 0, $CHILD_STATUS )
+	@@tmp = @@helper.tmpDir.first
 
 end
 
 
-end # class TestGitolite
+def teardown
+
+	FileUtils.remove_entry_secure @@tmp
+
+end
+
+
+def test_connection
+
+
+
+end
+
+
+end # class TestFactRepo
 end # module Gitomate

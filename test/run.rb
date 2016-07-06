@@ -26,6 +26,7 @@ def self.suite
 
 	# suite << TestThorfile.suite
 	suite << TestGitolite.suite
+	suite << TestFactRepo.suite
 
 end
 
