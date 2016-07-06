@@ -5,7 +5,7 @@ module Gitomate
 class TestHelper
 
 
-attr_reader :host, :prfx, :sshUser
+attr_reader :host, :prfx, :sshUser, :user
 
 
 def initialize
@@ -40,6 +40,14 @@ def dropPrivs
 		TidBits::Susu.su( user: @@user )
 
 	end
+
+end
+
+
+
+def gitoCmd( cmd )
+
+	`ssh #{@host} #{cmd}`
 
 end
 

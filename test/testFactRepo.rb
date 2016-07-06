@@ -36,8 +36,24 @@ def teardown
 end
 
 
-def test_connection
+def test_cloneRepo
 
+	repo = 'gitomate/test/cleanRepo'
+
+	puts @@helper.gitoCmd "create #{repo}"
+
+	Dir.chdir @@tmp
+
+	puts `git clone #{@@helper.host}:#{repo}`
+
+	assert( File.exist? "#{@@tmp}/cleanRepo" )
+
+ensure
+
+	FileUtils.remove_entry_secure "#{@@tmp}/cleanRepo"
+
+	puts @@helper.gitoCmd "D unlock #{repo}"
+	puts @@helper.gitoCmd "D rm     #{repo}"
 
 
 end
