@@ -62,8 +62,8 @@ def check( update = false )
 
 	if options( :initialized )  !=  @info[ :initialized ]
 
-		options( :initialized )  and  @log.warn "#{@repo.paths.inspect} is not a git repo."
-		options( :initialized )  or   @log.warn "#{@repo.paths.inspect} is a git repo but it shouldn't."
+		options( :initialized )  and  @log.warn "#{@repo.path.inspect} is not a git repo."
+		options( :initialized )  or   @log.warn "#{@repo.path.inspect} is a git repo but it shouldn't."
 
 		@checked = true
 		return @checkPassed = false
@@ -80,7 +80,7 @@ def check( update = false )
 
 			if @info[ :branch ] != target
 
-				@log.warn "#{@repo.paths.inspect} should be on branch #{target}, but is on #{info[:branch].inspect}."
+				@log.warn "#{@repo.path.inspect} should be on branch #{target}, but is on #{info[:branch].inspect}."
 				@checkPassed = false
 
 			end
