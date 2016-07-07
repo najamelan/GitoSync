@@ -16,7 +16,6 @@ class TestFactRepo < Test::Unit::TestCase
 
 def self.startup
 
-	@@helper.dropPrivs
 
 end
 
@@ -41,13 +40,40 @@ def teardown
 end
 
 
+
 def test_cloneRepo
+
+	results = @@helper.cleanRepo do |path, name, output|
+
+		assert( File.exist?( path ), output.ai )
+
+		output
+
+	end
+
+	# Check that all the commands that have been run have returned zero.
+	#
+	results.each do |result|
+
+		ap result[ :cmd ]
+
+		assert_equal( 0, result[ :status ], results.ai )
+
+	end
+
+
+end
+
+
+
+def test_cleanRepo
 
 	@@helper.cleanRepo do |path, name|
 
 		assert( File.exist? path )
 
 	end
+
 end
 
 end # class TestFactRepo

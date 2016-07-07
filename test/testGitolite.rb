@@ -10,7 +10,6 @@ class TestGitolite < Test::Unit::TestCase
 
 def self.startup
 
-	@@helper.dropPrivs
 
 end
 
