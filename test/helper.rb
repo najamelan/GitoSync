@@ -154,19 +154,13 @@ end
 
 
 
-def dirtyRepo( remote: true, name: randomString, &block )
+def pollute( path )
 
-	block_given? or raise ArgumentError.new 'Need block'
+	out = []
 
-	out = cleanRepo( remote: remote, name: name ) do |path, repoName, output|
-
-		Dir.chdir path
-		output += cmd "touch bfile"
-		output += cmd "git add bfile"
-
-		yield path, repoName, output
-
-	end
+	Dir.chdir path
+	out += cmd "touch bfile"
+	out += cmd "git add bfile"
 
 	out
 
