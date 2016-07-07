@@ -43,7 +43,7 @@ end
 
 def test_cloneRepo
 
-	results = @@helper.cleanRepo do |path, name, output|
+	results = @@helper.cleanRepoCopy( remote: false ) do |path, name, output|
 
 		assert( File.exist?( path ), output.ai )
 
@@ -68,11 +68,14 @@ end
 
 def test_cleanRepo
 
-	@@helper.cleanRepo do |path, name|
+	# @@helper.cleanRepo do |path, name,output|
 
-		assert( File.exist? path )
+	# 	fact = Facts::Repo.new( path: path )
+	# 	fact.check
 
-	end
+	# 	assert( fact.checkPassed, output.ai )
+
+	# end
 
 end
 

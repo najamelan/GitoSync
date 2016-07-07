@@ -13,7 +13,10 @@ def initialize
 	@host    = 'gitcontent@localhost'
 	@prfx    = 'gitomate/test/'
 	@sshUser = 'gitomate'
-	@@user   = 'gitomate'
+	@user    = 'gitomate'
+
+	@cleanRepoSrc = File.expand_path( 'data/fixtures/clean', File.dirname( __FILE__ ) )
+
 
 
 end
@@ -21,7 +24,7 @@ end
 
 def tmpDir
 
-	user = Etc.getpwnam( @@user )
+	user = Etc.getpwnam( @user )
 	dir = "/run/shm/#{ user.uid }/gitomate/#{ randomString }"
 
 	FileUtils.mkpath( dir ).first
@@ -33,11 +36,11 @@ end
 def dropPrivs
 
 	uid        = Process.euid
-	target_uid = Etc.getpwnam( @@user ).uid
+	target_uid = Etc.getpwnam( @user ).uid
 
 	if uid != target_uid
 
-		TidBits::Susu.su( user: @@user )
+		TidBits::Susu.su( user: @user )
 
 	end
 
@@ -72,33 +75,76 @@ def cleanRepo &block
 	shortName = randomString
 	repoName  = "gitomate/test/#{shortName}"
 	repoPath  = "#{tmp}/#{shortName}"
-	output    = []
+	out       = []
 
-	output += gitoCmd "create #{repoName}"
+	out += gitoCmd "create #{repoName}"
 
-	output += [ { cmd: "cd #{tmp}", status: 0 } ]
+	out += [ { cmd: "cd #{tmp}", status: 0 } ]
 	Dir.chdir tmp
 
-	output += cmd "git clone #{@host}:#{repoName}"
+	out += cmd "git clone #{@host}:#{repoName}"
 
-	output += [ { cmd: "cd #{repoPath}", status: 0 } ]
+	out += [ { cmd: "cd #{repoPath}", status: 0 } ]
 	Dir.chdir repoPath
 
-	output += cmd "touch afile"
-	output += cmd "git add afile"
-	output += cmd "git commit -m'touch afile'"
-	output += cmd "git push --set-upstream origin master"
-	output += cmd "git status"
+	out += cmd "touch afile"
+	out += cmd "git add afile"
+	out += cmd "git commit -m'touch afile'"
+	out += cmd "git push --set-upstream origin master"
 
-	yield repoPath, repoName, output
+	yield repoPath, repoName, out
 
 ensure
 
 	FileUtils.remove_entry_secure tmpDir
 
-	output += gitoCmd "D unlock #{repoName}"
-	output += gitoCmd "D rm     #{repoName}"
-	output
+	out += gitoCmd "D unlock #{repoName}"
+	out += gitoCmd "D rm     #{repoName}"
+	out
+
+end
+
+
+
+def cleanRepoCopy( remote: true, &block )
+
+	block_given? or raise ArgumentError.new 'Need block'
+
+	tmp       = tmpDir
+	shortName = randomString
+	repoName  = "gitomate/test/#{shortName}"
+	repoPath  = "#{tmp}/#{shortName}"
+	out    = []
+
+	out += [ { cmd: "cp -r #{@cleanRepoSrc}/. -> #{repoPath}", status: 0 } ]
+	FileUtils.cp_r "#{@cleanRepoSrc}/.", repoPath
+
+	out += [ { cmd: "cd #{repoPath}", status: 0 } ]
+	Dir.chdir repoPath
+
+	if remote
+
+		out += cmd     "git remote add -m master origin #{@host}:#{repoName}"
+		out += gitoCmd "create #{repoName}"
+		out += cmd     "git push --set-upstream origin master"
+
+	end
+
+	yield repoPath, repoName, out
+
+
+ensure
+
+	FileUtils.remove_entry_secure tmpDir
+
+	if remote
+
+		out += gitoCmd "D unlock #{repoName}"
+		out += gitoCmd "D rm     #{repoName}"
+
+	end
+
+	out
 
 end
 
