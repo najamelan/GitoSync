@@ -5,7 +5,8 @@ module Gitomate
 
 class TestFactRepo < Test::Unit::TestCase
 
-@@helper = TestHelper.new
+RFact    = Facts::Repo
+@@help = TestHelper.new
 
 # Provide a tmp directory variable for the class. This should be created in
 # setup and removed in teardown. Give it a default path that is sure not to exist,
@@ -16,7 +17,7 @@ class TestFactRepo < Test::Unit::TestCase
 
 def self.startup
 
-	Facts::Fact.config = @@helper.config
+	Facts::Fact.config = @@help.config
 
 
 end
@@ -30,7 +31,7 @@ end
 
 def setup
 
-	@@tmp = @@helper.tmpDir
+	@@tmp = @@help.tmpDir
 
 end
 
@@ -57,7 +58,7 @@ end
 
 def test_cloneRepo
 
-	results = @@helper.cleanRepo( remote: false, name: 'test_cloneRepo' ) do |path, name, output|
+	results = @@help.repo( remote: false, name: 'test_cloneRepo' ) do |path, name, output|
 
 		assert( File.exist?( path ), output.ai )
 
@@ -80,20 +81,40 @@ end
 
 
 
-def test_cleanRepo
+def test_repo
 
-	@@helper.cleanRepo( remote: false, name: 'test_cleanRepo' ) do |path, name, output|
+	q = @@help.quiet
 
-		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: true, branch: 'master' )
+	@@help.repo( remote: false, name: 'test_repo' ) do |path, name, output|
+
+		fact = RFact.new( quiet: q, path: path, clean: true, branch: 'master' )
 
 		fact.check
 		check( fact: fact, pass: true, output: output )
 
 
-		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: true, branch: 'dev' )
+		fact = RFact.new( quiet: q, path: path, clean: true, branch: 'dev' )
 
 		fact.check
 		check( fact: fact, pass: false, output: output )
+
+
+		# Make it a submodule
+		#
+		@@help.repo( remote: false, name: 'test_repoSuper', subs: path ) do |pathS, nameS, outputS|
+
+			fact = RFact.new( quiet: q, path: pathS, clean: true, branch: 'master' )
+
+			fact.check
+			check( fact: fact, pass: true, output: outputS )
+
+
+			fact = RFact.new( quiet: q, path: pathS, clean: true, branch: 'dev' )
+
+			fact.check
+			check( fact: fact, pass: false, output: outputS )
+
+		end
 
 	end
 
@@ -103,31 +124,33 @@ end
 
 def test_workingDir
 
-	@@helper.cleanRepo( remote: false, name: 'test_workingDir' ) do |path, name, output|
+	q = @@help.quiet
+
+	@@help.repo( remote: false, name: 'test_workingDir' ) do |path, name, output|
 
 
-		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: true )
+		fact = RFact.new( quiet: q, path: path, clean: true )
 
 		fact.check
 		check( fact: fact, pass: true, output: output )
 
 
-		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: false )
+		fact = RFact.new( quiet: q, path: path, clean: false )
 
 		fact.check
 		check( fact: fact, pass: false, output: output )
 
 
-		@@helper.pollute path
+		@@help.pollute path
 
 
-		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: true )
+		fact = RFact.new( quiet: q, path: path, clean: true )
 
 		fact.check
 		check( fact: fact, pass: false, output: output )
 
 
-		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: false )
+		fact = RFact.new( quiet: q, path: path, clean: false )
 
 		fact.check
 		check( fact: fact, pass: true, output: output )
@@ -141,25 +164,27 @@ end
 
 def test_branch
 
-	@@helper.cleanRepo( remote: false, name: 'test_branch' ) do |path, name, output|
+	q = @@help.quiet
 
-		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, branch: 'master' )
+	@@help.repo( remote: false, name: 'test_branch' ) do |path, name, output|
+
+		fact = RFact.new( quiet: q, path: path, branch: 'master' )
 
 		fact.check
 		check( fact: fact, pass: true, output: output )
 
 
 
-		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, branch: 'dev' )
+		fact = RFact.new( quiet: q, path: path, branch: 'dev' )
 
 		fact.check
 		check( fact: fact, pass: false, output: output )
 
 
 
-		@@helper.pollute path
+		@@help.pollute path
 
-		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, branch: 'master' )
+		fact = RFact.new( quiet: q, path: path, branch: 'master' )
 
 		fact.check
 		check( fact: fact, pass: true, output: output )

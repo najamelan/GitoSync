@@ -8,7 +8,7 @@ module Facts
 # path*       : Path to the repository directory (workingDir with .git)
 # initialized : bool   (default=true)
 # branch      : string
-# workDirClean: bool
+# clean       : bool
 #
 class Repo < Facts::Fact
 
@@ -34,13 +34,13 @@ def analyze( update = false )
 
 	super == 'return'  and  return @analyzePassed
 
-	@info[ :initialized  ]   = @repo.valid?
+	@info[ :initialized ]   = @repo.valid?
 
 
 	if @info[ :initialized ]
 
-		@info[ :branch       ]   = @repo.branch
-		@info[ :workDirClean ]   = @repo.workingDirClean?
+		@info[ :branch ]   = @repo.branch
+		@info[ :clean  ]   = @repo.workingDirClean?
 
 	end
 
@@ -86,9 +86,9 @@ def check( update = false )
 			end
 
 
-		when :workDirClean
+		when :clean
 
-			if @info[ :workDirClean ] != target
+			if @info[ :clean ] != target
 
 				warn "#{@repo.path.inspect} should have a clean working directory."
 				@checkPassed = false

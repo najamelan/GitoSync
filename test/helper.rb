@@ -110,7 +110,7 @@ end
 
 
 
-def cleanRepo( remote: true, name: randomString,  &block )
+def repo( remote: true, name: randomString, subpaths: [], &block )
 
 	block_given? or raise ArgumentError.new 'Need block'
 
