@@ -16,6 +16,8 @@ class TestFactRepo < Test::Unit::TestCase
 
 def self.startup
 
+	Facts::Fact.config = @@helper.config
+
 
 end
 
@@ -55,7 +57,7 @@ def test_cloneRepo
 	#
 	results.each do |result|
 
-		ap result[ :cmd ]
+		# ap result[ :cmd ]
 
 		assert_equal( 0, result[ :status ], results.ai )
 
@@ -68,14 +70,18 @@ end
 
 def test_cleanRepo
 
-	# @@helper.cleanRepo do |path, name,output|
+	@@helper.cleanRepoCopy do |path, name,output|
 
-	# 	fact = Facts::Repo.new( path: path )
-	# 	fact.check
+		fact = Facts::Repo.new( path: path, workDirClean: true )
+		fact.check
 
-	# 	assert( fact.checkPassed, output.ai )
+		assert( fact.analyzed     , output.ai )
+		assert( fact.analyzePassed, output.ai )
 
-	# end
+		assert( fact.checked      , output.ai )
+		assert( fact.checkPassed  , output.ai )
+
+	end
 
 end
 
