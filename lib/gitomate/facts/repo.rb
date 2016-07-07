@@ -34,13 +34,13 @@ def analyze( update = false )
 
 	super == 'return'  and  return @analyzePassed
 
-	info[ :initialized  ]   = @repo.valid?
+	@info[ :initialized  ]   = @repo.valid?
 
 
-	if info[ :initialized ]
+	if @info[ :initialized ]
 
-		info[ :branch       ]   = @repo.branch
-		info[ :workDirClean ]   = @repo.workingDirClean?
+		@info[ :branch       ]   = @repo.branch
+		@info[ :workDirClean ]   = @repo.workingDirClean?
 
 	end
 
@@ -80,7 +80,7 @@ def check( update = false )
 
 			if @info[ :branch ] != target
 
-				@log.warn "#{@repo.path.inspect} should be on branch #{target}, but is on #{info[:branch].inspect}."
+				@log.warn "#{@repo.path.inspect} should be on branch #{target}, but is on #{@info[:branch].inspect}."
 				@checkPassed = false
 
 			end
