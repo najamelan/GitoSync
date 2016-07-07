@@ -152,6 +152,26 @@ end
 
 
 
+def dirtyRepoCopy( remote: true, name: randomString, &block )
+
+	block_given? or raise ArgumentError.new 'Need block'
+
+	out = cleanRepoCopy( remote: remote, name: name ) do |path, repoName, output|
+
+		Dir.chdir path
+		output += cmd "touch bfile"
+		output += cmd "git add bfile"
+
+		yield path, repoName, output
+
+	end
+
+	out
+
+end
+
+
+
 def gitoCmd( cmd )
 
 	cmd "ssh #{@host} #{cmd}"

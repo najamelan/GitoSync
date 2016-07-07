@@ -129,7 +129,10 @@ def workingDirClean?()
 
 	begin
 
-		@rug.diff_workdir( @rug.head.name ).size == 0
+		`git status -s`.lines.length == 0
+
+		# Does not work
+		# @rug.diff_workdir( @rug.head.name ).size == 0
 
 	rescue Rugged::ReferenceError => e
 

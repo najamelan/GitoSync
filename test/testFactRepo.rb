@@ -95,5 +95,34 @@ def test_cleanRepo
 
 end
 
+
+
+def test_dirtyRepo
+
+	@@helper.dirtyRepoCopy( remote: false, name: 'test_dirtyRepo' ) do |path, name, output|
+
+		fact = Facts::Repo.new( path: path, workDirClean: false, branch: 'master' )
+		fact.check
+
+		assert( fact.analyzed     , output.ai )
+		assert( fact.analyzePassed, output.ai )
+
+		assert( fact.checked      , output.ai )
+		assert( fact.checkPassed  , output.ai )
+
+
+		fact = Facts::Repo.new( path: path, workDirClean: true )
+		fact.check
+
+		assert( fact.analyzed     , output.ai )
+		assert( fact.analyzePassed, output.ai )
+
+		assert( fact.checked      , output.ai )
+		assert( !fact.checkPassed , output.ai )
+
+	end
+
+end
+
 end # class TestFactRepo
 end # module Gitomate
