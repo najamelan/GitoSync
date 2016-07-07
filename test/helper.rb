@@ -71,46 +71,46 @@ end
 #
 #
 #
-def cleanRepo &block
+# def cleanRepo &block
 
-	block_given? or raise ArgumentError.new 'Need block'
+# 	block_given? or raise ArgumentError.new 'Need block'
 
-	tmp       = tmpDir
-	shortName = randomString
-	repoName  = "gitomate/test/#{shortName}"
-	repoPath  = "#{tmp}/#{shortName}"
-	out       = []
+# 	tmp       = tmpDir
+# 	shortName = randomString
+# 	repoName  = "gitomate/test/#{shortName}"
+# 	repoPath  = "#{tmp}/#{shortName}"
+# 	out       = []
 
-	out += gitoCmd "create #{repoName}"
+# 	out += gitoCmd "create #{repoName}"
 
-	out += [ { cmd: "cd #{tmp}", status: 0 } ]
-	Dir.chdir tmp
+# 	out += [ { cmd: "cd #{tmp}", status: 0 } ]
+# 	Dir.chdir tmp
 
-	out += cmd "git clone #{@host}:#{repoName}"
+# 	out += cmd "git clone #{@host}:#{repoName}"
 
-	out += [ { cmd: "cd #{repoPath}", status: 0 } ]
-	Dir.chdir repoPath
+# 	out += [ { cmd: "cd #{repoPath}", status: 0 } ]
+# 	Dir.chdir repoPath
 
-	out += cmd "touch afile"
-	out += cmd "git add afile"
-	out += cmd "git commit -m'touch afile'"
-	out += cmd "git push --set-upstream origin master"
+# 	out += cmd "touch afile"
+# 	out += cmd "git add afile"
+# 	out += cmd "git commit -m'touch afile'"
+# 	out += cmd "git push --set-upstream origin master"
 
-	yield repoPath, repoName, out
+# 	yield repoPath, repoName, out
 
-ensure
+# ensure
 
-	FileUtils.remove_entry_secure tmpDir
+# 	FileUtils.remove_entry_secure tmpDir
 
-	out += gitoCmd "D unlock #{repoName}"
-	out += gitoCmd "D rm     #{repoName}"
-	out
+# 	out += gitoCmd "D unlock #{repoName}"
+# 	out += gitoCmd "D rm     #{repoName}"
+# 	out
 
-end
+# end
 
 
 
-def cleanRepoCopy( remote: true, name: randomString,  &block )
+def cleanRepo( remote: true, name: randomString,  &block )
 
 	block_given? or raise ArgumentError.new 'Need block'
 
@@ -154,11 +154,11 @@ end
 
 
 
-def dirtyRepoCopy( remote: true, name: randomString, &block )
+def dirtyRepo( remote: true, name: randomString, &block )
 
 	block_given? or raise ArgumentError.new 'Need block'
 
-	out = cleanRepoCopy( remote: remote, name: name ) do |path, repoName, output|
+	out = cleanRepo( remote: remote, name: name ) do |path, repoName, output|
 
 		Dir.chdir path
 		output += cmd "touch bfile"

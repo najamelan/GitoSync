@@ -45,7 +45,7 @@ end
 
 def test_cloneRepo
 
-	results = @@helper.cleanRepoCopy( remote: false, name: 'test_cloneRepo' ) do |path, name, output|
+	results = @@helper.cleanRepo( remote: false, name: 'test_cloneRepo' ) do |path, name, output|
 
 		assert( File.exist?( path ), output.ai )
 
@@ -70,7 +70,7 @@ end
 
 def test_cleanRepo
 
-	@@helper.cleanRepoCopy( remote: false, name: 'test_cleanRepo' ) do |path, name, output|
+	@@helper.cleanRepo( remote: false, name: 'test_cleanRepo' ) do |path, name, output|
 
 		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: true, branch: 'master' )
 		fact.check
@@ -99,7 +99,7 @@ end
 
 def test_dirtyRepo
 
-	@@helper.dirtyRepoCopy( remote: false, name: 'test_dirtyRepo' ) do |path, name, output|
+	@@helper.dirtyRepo( remote: false, name: 'test_dirtyRepo' ) do |path, name, output|
 
 		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: false, branch: 'master' )
 		fact.check
