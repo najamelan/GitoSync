@@ -151,6 +151,10 @@ default:
 
   Facts:
 
+    Fact:
+
+      quiet: false
+
     Path:
 
       exist      : true

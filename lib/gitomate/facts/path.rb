@@ -74,8 +74,8 @@ def check( update = false )
 
 	if options( :exist ) != @info[ :exist ]
 
-		options( :exist ) and @log.warn "#{@info[ :path ].inspect} does not exist."
-		options( :exist ) or  @log.warn "#{@info[ :path ].inspect} exists but it shouldn't."
+		options( :exist ) and warn "#{@info[ :path ].inspect} does not exist."
+		options( :exist ) or  warn "#{@info[ :path ].inspect} exists but it shouldn't."
 
 		@checked = true
 		return @checkPassed = false
@@ -91,7 +91,7 @@ def check( update = false )
 
 			if target != @info[ :type ]
 
-				@log.warn "[#{@info[ :path ]}] should be a #{target.inspect} but is a #{@type.inspect}"
+				warn "[#{@info[ :path ]}] should be a #{target.inspect} but is a #{@type.inspect}"
 				@checkPassed = false
 
 			end

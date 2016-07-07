@@ -1,3 +1,4 @@
+# quiet       : bool (default=false)
 
 module Gitomate
 module Facts
@@ -15,13 +16,17 @@ cattr_accessor :config, instance_reader: false
 
 def initialize( default, runTime )
 
-	setupOptions( default, runTime )
+	ownDefault = Fact.config.options( :Facts, :Fact )
+
+	ownDefault.deep_merge! default
+
+	setupOptions( ownDefault, runTime )
 
 	@mustDepend = *options( :mustDepend )
 	@depend     = *options( :dependOn   )
 	@mandatory  =  options( :mandatory  ) || [] # We don't splat here, so we can test nested keys
 	@info       = {}
-	@log  = Feedback.get self.class.name, self.class.config
+	@log        = Feedback.get self.class.name, self.class.config
 
 	requireOptions
 	requireDepends
@@ -172,6 +177,21 @@ def dependOn( klass, **opts )
 		@depend.push klass.new( **opts )
 
 	end
+
+end
+
+
+
+def debug(   msg ) log( msg, lvl: :debug   ) end
+def info(    msg ) log( msg, lvl: :info    ) end
+def warn(    msg ) log( msg, lvl: :warn    ) end
+def error(   msg ) log( msg, lvl: :error   ) end
+def fatal(   msg ) log( msg, lvl: :fatal   ) end
+def unknown( msg ) log( msg, lvl: :unknown ) end
+
+def log( msg, lvl: :warn )
+
+	options( :quiet ) or @log.send lvl, msg
 
 end
 

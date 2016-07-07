@@ -5,7 +5,7 @@ module Gitomate
 class TestHelper
 
 
-attr_reader :host, :prfx, :sshUser, :user, :config
+attr_reader :host, :prfx, :sshUser, :user, :config, :quiet
 
 
 def initialize
@@ -15,8 +15,10 @@ def initialize
 	@sshUser = 'gitomate'
 	@user    = 'gitomate'
 	@config  = Config.get 'testing'
+	@quiet   = true
 
 	@cleanRepoSrc = File.expand_path( 'data/fixtures/clean', File.dirname( __FILE__ ) )
+
 
 
 

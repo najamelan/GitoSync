@@ -72,7 +72,7 @@ def test_cleanRepo
 
 	@@helper.cleanRepoCopy( remote: false, name: 'test_cleanRepo' ) do |path, name, output|
 
-		fact = Facts::Repo.new( path: path, workDirClean: true, branch: 'master' )
+		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: true, branch: 'master' )
 		fact.check
 
 		assert( fact.analyzed     , output.ai )
@@ -82,7 +82,7 @@ def test_cleanRepo
 		assert( fact.checkPassed  , output.ai )
 
 
-		fact = Facts::Repo.new( path: path, workDirClean: true, branch: 'dev' )
+		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: true, branch: 'dev' )
 		fact.check
 
 		assert( fact.analyzed     , output.ai )
@@ -101,7 +101,7 @@ def test_dirtyRepo
 
 	@@helper.dirtyRepoCopy( remote: false, name: 'test_dirtyRepo' ) do |path, name, output|
 
-		fact = Facts::Repo.new( path: path, workDirClean: false, branch: 'master' )
+		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: false, branch: 'master' )
 		fact.check
 
 		assert( fact.analyzed     , output.ai )
@@ -111,7 +111,7 @@ def test_dirtyRepo
 		assert( fact.checkPassed  , output.ai )
 
 
-		fact = Facts::Repo.new( path: path, workDirClean: true )
+		fact = Facts::Repo.new( quiet: @@helper.quiet, path: path, workDirClean: true )
 		fact.check
 
 		assert( fact.analyzed     , output.ai )
