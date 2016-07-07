@@ -6,7 +6,12 @@ module Gitomate
 class TestFactRepo < Test::Unit::TestCase
 
 @@helper = TestHelper.new
-@@tmp    = ''
+
+# Provide a tmp directory variable for the class. This should be created in
+# setup and removed in teardown. Give it a default path that is sure not to exist,
+# because if creation fails, it will be attempted to be deleted...
+#
+@@tmp    = 'asdfasdf'
 
 
 def self.startup
@@ -24,7 +29,7 @@ end
 
 def setup
 
-	@@tmp = @@helper.tmpDir.first
+	@@tmp = @@helper.tmpDir
 
 end
 
@@ -38,26 +43,12 @@ end
 
 def test_cloneRepo
 
-	repo = 'gitomate/test/cleanRepo'
+	@@helper.cleanRepo do |path, name|
 
-	puts @@helper.gitoCmd "create #{repo}"
+		assert( File.exist? path )
 
-	Dir.chdir @@tmp
-
-	puts `git clone #{@@helper.host}:#{repo}`
-
-	assert( File.exist? "#{@@tmp}/cleanRepo" )
-
-ensure
-
-	FileUtils.remove_entry_secure "#{@@tmp}/cleanRepo"
-
-	puts @@helper.gitoCmd "D unlock #{repo}"
-	puts @@helper.gitoCmd "D rm     #{repo}"
-
-
+	end
 end
-
 
 end # class TestFactRepo
 end # module Gitomate
