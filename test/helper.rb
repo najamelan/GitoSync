@@ -108,12 +108,12 @@ end
 
 
 
-def cleanRepoCopy( remote: true, &block )
+def cleanRepoCopy( remote: true, name: randomString,  &block )
 
 	block_given? or raise ArgumentError.new 'Need block'
 
 	tmp       = tmpDir
-	shortName = randomString
+	shortName = name || randomString
 	repoName  = "gitomate/test/#{shortName}"
 	repoPath  = "#{tmp}/#{shortName}"
 	out    = []
