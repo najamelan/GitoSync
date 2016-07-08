@@ -87,13 +87,13 @@ def test_repo
 
 	@@help.repo( remote: false, name: 'test_repo' ) do |path, name, output|
 
-		fact = RFact.new( quiet: q, path: path, clean: true, branch: 'master' )
+		fact = RFact.new( quiet: q, path: path )
 
 		fact.check
 		check( fact: fact, pass: true, output: output )
 
 
-		fact = RFact.new( quiet: q, path: path, clean: true, branch: 'dev' )
+		fact = RFact.new( quiet: q, path: path, initialized: false )
 
 		fact.check
 		check( fact: fact, pass: false, output: output )
@@ -101,15 +101,29 @@ def test_repo
 
 		# Make it a submodule
 		#
-		@@help.repo( remote: false, name: 'test_repoSuper', subs: path ) do |pathS, nameS, outputS|
+		@@help.repo( remote: false, name: 'test_repoSuper', subs: path ) do |pathS, nameS, outputS, subPaths|
 
-			fact = RFact.new( quiet: q, path: pathS, clean: true, branch: 'master' )
+			fact = RFact.new( quiet: q, path: pathS )
 
 			fact.check
 			check( fact: fact, pass: true, output: outputS )
 
 
-			fact = RFact.new( quiet: q, path: pathS, clean: true, branch: 'dev' )
+			fact = RFact.new( quiet: q, path: pathS, initialized: false )
+
+			fact.check
+			check( fact: fact, pass: false, output: outputS )
+
+
+			# Test the submodule
+			#
+			fact = RFact.new( quiet: q, path: subPaths.first )
+
+			fact.check
+			check( fact: fact, pass: true, output: outputS )
+
+
+			fact = RFact.new( quiet: q, path: subPaths.first, initialized: false )
 
 			fact.check
 			check( fact: fact, pass: false, output: outputS )

@@ -133,11 +133,11 @@ def repo( remote: true, name: randomString, subs: [], &block )
 	subs.each do |src|
 
 		path = randomString
-		out += cmd  "git submodule add path #{path}"
+		out += cmd  "git submodule add #{repoPath} #{path}"
 		out += cmd  "git submodule update --init --recursive #{path}"
 		out += cmd  "git commit -m'Add submodule #{path}'"
 
-		subPaths << "#{repoPath}/path"
+		subPaths << "#{repoPath}/#{path}"
 
 	end
 
