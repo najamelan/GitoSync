@@ -175,6 +175,64 @@ def test_workingDir
 end
 
 
+def test_workingDirSubs
+
+	q = @@help.quiet
+
+	@@help.repo( remote: false, name: 'test_workingDirSubs' ) do |path, name, output|
+
+		# Make it a submodule
+		#
+		@@help.repo( remote: false, name: 'test_workingDirSubsSuper', subs: path ) do |pathS, nameS, outputS, subPaths|
+
+			fact = RFact.new( quiet: q, path: pathS, clean: true )
+
+			fact.check
+			check( fact: fact, pass: true, output: outputS )
+
+
+			fact = RFact.new( quiet: q, path: pathS, clean: false )
+
+			fact.check
+			check( fact: fact, pass: false, output: outputS )
+
+
+			# Pollute submodule
+			@@help.pollute subPaths.first
+
+
+			fact = RFact.new( quiet: q, path: pathS, clean: true )
+
+			fact.check
+			check( fact: fact, pass: false, output: outputS )
+
+
+			fact = RFact.new( quiet: q, path: pathS, clean: false )
+
+			fact.check
+			check( fact: fact, pass: true, output: outputS )
+
+
+			# Test the submodule
+			#
+			fact = RFact.new( quiet: q, path: subPaths.first, clean: true )
+
+			fact.check
+			check( fact: fact, pass: false, output: outputS )
+
+
+			fact = RFact.new( quiet: q, path: subPaths.first, clean: false )
+
+			fact.check
+			check( fact: fact, pass: true, output: outputS )
+
+		end
+
+	end
+
+end
+
+
 
 def test_branch
 
@@ -198,7 +256,7 @@ def test_branch
 
 		@@help.pollute path
 
-		fact = RFact.new( quiet: q, path: path, branch: 'master' )
+		fact = RFact.new( quiet: q, path: path, branch: 'master', clean: false )
 
 		fact.check
 		check( fact: fact, pass: true, output: output )
