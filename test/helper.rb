@@ -110,7 +110,7 @@ end
 
 
 
-def repo( remote: true, name: randomString, subpaths: [], &block )
+def repo( remote: true, name: randomString, subs: [], &block )
 
 	block_given? or raise ArgumentError.new 'Need block'
 
@@ -126,6 +126,22 @@ def repo( remote: true, name: randomString, subpaths: [], &block )
 	out += [ { cmd: "cd #{repoPath}", status: 0 } ]
 	Dir.chdir repoPath
 
+
+	subPaths = []
+	subs     = *subs
+
+	subs.each do |src|
+
+		path = randomString
+		out += cmd  "git submodule add path #{path}"
+		out += cmd  "git submodule update --init --recursive #{path}"
+		out += cmd  "git commit -m'Add submodule #{path}'"
+
+		subPaths << "#{repoPath}/path"
+
+	end
+
+
 	if remote
 
 		out += cmd     "git remote add -m master origin #{@host}:#{repoName}"
@@ -134,7 +150,7 @@ def repo( remote: true, name: randomString, subpaths: [], &block )
 
 	end
 
-	yield repoPath, repoName, out
+	yield repoPath, repoName, out, subPaths
 
 
 ensure
