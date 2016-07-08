@@ -17,6 +17,11 @@ module Facts
 # hashAlgo   : :SHA512
 # hash       : string   the hash of the content
 #
+# TODO: currently we won't check anything if the exist option doesn't correspond with reality.
+#       However, we don't do input validation to keep people from asking us to test properties
+#       on a file that they claim should not exist, which might be confusing when they check the
+#       results.
+#
 class Path < Facts::Fact
 
 
@@ -69,15 +74,16 @@ def check( update = false )
 
 	super == 'return'  and  return @checkPassed
 
-	@checkPassed = true
-
+	@checkPassed      = true
+	@result[ :exist ] = true
 
 	if options( :exist ) != @info[ :exist ]
 
 		options( :exist ) and warn "#{@info[ :path ].inspect} does not exist."
 		options( :exist ) or  warn "#{@info[ :path ].inspect} exists but it shouldn't."
 
-		@checked = true
+		@checked            = true
+		@result[ :exist ]   = false
 		return @checkPassed = false
 
 	end
@@ -89,10 +95,14 @@ def check( update = false )
 
 		when :type
 
+			@result[ :type ] = true
+
 			if target != @info[ :type ]
 
 				warn "[#{@info[ :path ]}] should be a #{target.inspect} but is a #{@type.inspect}"
-				@checkPassed = false
+
+				@result[ :type ] = false
+				@checkPassed     = false
 
 			end
 

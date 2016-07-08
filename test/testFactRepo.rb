@@ -44,13 +44,15 @@ end
 
 
 
-def check( pass:, fact:, output: [] )
+def check( fact, pass, output, result )
 
 	assert( fact.analyzed           , output.ai )
 	assert( fact.analyzePassed      , output.ai )
 
 	assert( fact.checked            , output.ai )
 	assert( fact.checkPassed == pass, output.ai )
+
+	assert_equal( result, fact.result, output.ai )
 
 end
 
@@ -90,13 +92,13 @@ def test_repo
 		fact = RFact.new( quiet: q, path: path )
 
 		fact.check
-		check( fact: fact, pass: true, output: output )
+		check( fact, true, output, { initialized: true } )
 
 
 		fact = RFact.new( quiet: q, path: path, initialized: false )
 
 		fact.check
-		check( fact: fact, pass: false, output: output )
+		check( fact, false, output, { initialized: false } )
 
 
 		# Make it a submodule
@@ -106,13 +108,13 @@ def test_repo
 			fact = RFact.new( quiet: q, path: pathS )
 
 			fact.check
-			check( fact: fact, pass: true, output: outputS )
+			check( fact, true, outputS, { initialized: true } )
 
 
 			fact = RFact.new( quiet: q, path: pathS, initialized: false )
 
 			fact.check
-			check( fact: fact, pass: false, output: outputS )
+			check( fact, false, outputS, { initialized: false } )
 
 
 			# Test the submodule
@@ -120,13 +122,13 @@ def test_repo
 			fact = RFact.new( quiet: q, path: subPaths.first )
 
 			fact.check
-			check( fact: fact, pass: true, output: outputS )
+			check( fact, true, outputS, { initialized: true } )
 
 
 			fact = RFact.new( quiet: q, path: subPaths.first, initialized: false )
 
 			fact.check
-			check( fact: fact, pass: false, output: outputS )
+			check( fact, false, outputS, { initialized: false } )
 
 		end
 
@@ -146,13 +148,13 @@ def test_workingDir
 		fact = RFact.new( quiet: q, path: path, clean: true )
 
 		fact.check
-		check( fact: fact, pass: true, output: output )
+		check( fact, true, output, { initialized: true, clean: true } )
 
 
 		fact = RFact.new( quiet: q, path: path, clean: false )
 
 		fact.check
-		check( fact: fact, pass: false, output: output )
+		check( fact, false, output, { initialized: true, clean: false } )
 
 
 		@@help.pollute path
@@ -161,13 +163,13 @@ def test_workingDir
 		fact = RFact.new( quiet: q, path: path, clean: true )
 
 		fact.check
-		check( fact: fact, pass: false, output: output )
+		check( fact, false, output, { initialized: true, clean: false } )
 
 
 		fact = RFact.new( quiet: q, path: path, clean: false )
 
 		fact.check
-		check( fact: fact, pass: true, output: output )
+		check( fact, true, output, { initialized: true, clean: true } )
 
 
 	end
@@ -188,13 +190,13 @@ def test_workingDirSubs
 			fact = RFact.new( quiet: q, path: pathS, clean: true )
 
 			fact.check
-			check( fact: fact, pass: true, output: outputS )
+			check( fact, true, outputS, { initialized: true, clean: true } )
 
 
 			fact = RFact.new( quiet: q, path: pathS, clean: false )
 
 			fact.check
-			check( fact: fact, pass: false, output: outputS )
+			check( fact, false, outputS, { initialized: true, clean: false } )
 
 
 			# Pollute submodule
@@ -204,13 +206,13 @@ def test_workingDirSubs
 			fact = RFact.new( quiet: q, path: pathS, clean: true )
 
 			fact.check
-			check( fact: fact, pass: false, output: outputS )
+			check( fact, false, outputS, { initialized: true, clean: false } )
 
 
 			fact = RFact.new( quiet: q, path: pathS, clean: false )
 
 			fact.check
-			check( fact: fact, pass: true, output: outputS )
+			check( fact, true, outputS, { initialized: true, clean: true } )
 
 
 			# Test the submodule
@@ -218,13 +220,13 @@ def test_workingDirSubs
 			fact = RFact.new( quiet: q, path: subPaths.first, clean: true )
 
 			fact.check
-			check( fact: fact, pass: false, output: outputS )
+			check( fact, false, outputS, { initialized: true, clean: false } )
 
 
 			fact = RFact.new( quiet: q, path: subPaths.first, clean: false )
 
 			fact.check
-			check( fact: fact, pass: true, output: outputS )
+			check( fact, true, outputS, { initialized: true, clean: true } )
 
 		end
 
@@ -243,14 +245,14 @@ def test_branch
 		fact = RFact.new( quiet: q, path: path, branch: 'master' )
 
 		fact.check
-		check( fact: fact, pass: true, output: output )
+		check( fact, true, output, { initialized: true, branch: true } )
 
 
 
 		fact = RFact.new( quiet: q, path: path, branch: 'dev' )
 
 		fact.check
-		check( fact: fact, pass: false, output: output )
+		check( fact, false, output, { initialized: true, branch: false } )
 
 
 
@@ -259,7 +261,7 @@ def test_branch
 		fact = RFact.new( quiet: q, path: path, branch: 'master', clean: false )
 
 		fact.check
-		check( fact: fact, pass: true, output: output )
+		check( fact, true, output, { initialized: true, branch: true, clean: true } )
 
 
 		# Change branch

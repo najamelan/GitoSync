@@ -8,7 +8,7 @@ class Fact
 include TidBits::Options::Configurable
 
 
-attr_reader :depend, :info, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed
+attr_reader :depend, :info, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :result
 
 cattr_accessor :config, instance_reader: false
 
@@ -26,6 +26,7 @@ def initialize( default, runTime )
 	@depend     = *options( :dependOn   )
 	@mandatory  =  options( :mandatory  ) || [] # We don't splat here, so we can test nested keys
 	@info       = {}
+	@result     = {}
 	@log        = Feedback.get self.class.name, self.class.config
 
 	requireOptions
