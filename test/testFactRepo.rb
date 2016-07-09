@@ -60,28 +60,28 @@ end
 
 
 
-# def test_cloneRepo
+def test_cloneRepo
 
-# 	results = @@help.repo( remote: false, name: 'test_cloneRepo' ) do |path, name, out|
+	results = @@help.repo( remote: false, name: 'test_cloneRepo' ) do |path, name, out|
 
-# 		assert( File.exist?( path ), out.ai )
+		assert( File.exist?( path ), out.ai )
 
-# 		out
+		out
 
-# 	end
+	end
 
-# 	# Check that all the commands that have been run have returned zero.
-# 	#
-# 	results.each do |result|
+	# Check that all the commands that have been run have returned zero.
+	#
+	results.each do |result|
 
-# 		# ap result[ :cmd ]
+		# ap result[ :cmd ]
 
-# 		assert_equal( 0, result[ :status ], results.ai )
+		assert_equal( 0, result[ :status ], results.ai )
 
-# 	end
+	end
 
 
-# end
+end
 
 
 
