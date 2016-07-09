@@ -53,6 +53,8 @@ def reset
 	#
 	@options.each do | key, value |
 
+		key == :quiet and next
+
 		@state[ key ] = { expect: value }
 
 	end
