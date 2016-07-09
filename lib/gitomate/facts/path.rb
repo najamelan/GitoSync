@@ -5,8 +5,73 @@ module Facts
 
 # Options (* means mandatory)
 #
+# path* : Path to the repository directory (workingDir with .git)
+# exist : bool   (default=true)
+#
+class PathExist < Facts::Fact
+
+
+attr_reader :path
+
+
+def initialize( **opts )
+
+	super( Fact.config.options( :Facts, :PathExist ), opts, :path )
+
+	@path = options :path
+
+end
+
+
+
+def analyze( update = false )
+
+	super == 'return'  and  return @analyzePassed
+
+	@state[ :exit ][ :found ] = File.exists? @path
+
+	@analyzePassed
+
+end
+
+
+
+def check( update = false )
+
+	super == 'return'  and  return @checkPassed
+
+	key = :exist
+
+	@state[ key ][ :passed ] = found( key ) == expect( key )  and  return @checkPassed
+
+	# Failure
+	#
+	@checkPassed             = false
+	@state[ key ][ :passed ] = false
+
+	expect( key ) and warn "#{@path.inspect} does not exist."
+	expect( key ) or  warn "#{@path.inspect} exists but it shouldn't."
+
+	@checkPassed
+
+end
+
+
+
+def fix()
+
+	super == 'return'  and  return @fixPassed
+
+	raise "Note implemented"
+
+end
+
+end # class  PathExist
+
+
+# Options (* means mandatory)
+#
 # path*      : string
-# exist      : boolean (default=true)
 # type       : "file", "directory", "characterSpecial", "blockSpecial", "fifo", "link", "socket", or "unknown"
 #              (default=file)
 # symlink    : boolean
@@ -24,16 +89,17 @@ module Facts
 #
 class Path < Facts::Fact
 
-
 attr_reader :path
 
 
 
 def initialize( **opts )
 
-	super( Fact.config.options( :Facts, :Path ), opts )
+	super( Fact.config.options( :Facts, :Path ), opts, :path, { exist: true } )
 
-	@info[ :path ] = options :path
+	@path = options :path
+
+	dependOn( PathExist, path: @path, type: options( :type ) )
 
 end
 
@@ -43,30 +109,21 @@ def analyze( update = false )
 
 	super == 'return'  and  return @analyzePassed
 
-	@info[ :exist ] = File.exists? @info[ :path ]
+
+	stat = File.stat @path
+
+	@state[ :symlink ][ :found ] = stat.symlink?
+	@state[ :type    ][ :found ] = stat.ftype
+	@state[ :mode    ][ :found ] = stat.mode
+	@state[ :uid     ][ :found ] = stat.uid
+	@state[ :gid     ][ :found ] = stat.gid
+	@state[ :owner   ][ :found ] = Etc.getpwuid( @state[ :uid ][ :found ] ).name
+	@state[ :group   ][ :found ] = Etc.getgrgid( @state[ :gid ][ :found ] ).name
 
 
-	# These make no sense if the file doesn't exist
-	#
-	if @info[ :exist ]
-
-		stat = File.stat @info[ :path ]
-
-		@info[ :symlink ] = stat.symlink?
-		@info[ :type    ] = stat.ftype
-		@info[ :mode    ] = stat.mode
-		@info[ :uid     ] = stat.uid
-		@info[ :gid     ] = stat.gid
-		@info[ :owner   ] = Etc.getpwuid( @info[ :uid ] ).name
-		@info[ :group   ] = Etc.getgrgid( @info[ :gid ] ).name
-
-	end
-
-	@analyzed      = true
-	@analyzePassed = true
+	@analyzePassed
 
 end
-
 
 
 
@@ -74,44 +131,31 @@ def check( update = false )
 
 	super == 'return'  and  return @checkPassed
 
-	@checkPassed      = true
-	@result[ :exist ] = true
 
-	if options( :exist ) != @info[ :exist ]
+	@state.each do | key, info |
 
-		options( :exist ) and warn "#{@info[ :path ].inspect} does not exist."
-		options( :exist ) or  warn "#{@info[ :path ].inspect} exists but it shouldn't."
+		info[ :passed ] = true
 
-		@checked            = true
-		@result[ :exist ]   = false
-		return @checkPassed = false
+		if found( key ) != expect( key )
 
-	end
+			info[ :passed ] = false
+			@checkPassed    = false
 
 
-	options.each do | key, target |
+			case key
 
-		case key
-
-		when :type
-
-			@result[ :type ] = true
-
-			if target != @info[ :type ]
+			when :type
 
 				warn "[#{@info[ :path ]}] should be a #{target.inspect} but is a #{@type.inspect}"
 
-				@result[ :type ] = false
-				@checkPassed     = false
-
 			end
+
 
 		end
 
 	end
 
 
-	@checked = true
 	@checkPassed
 
 end

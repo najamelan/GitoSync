@@ -8,13 +8,13 @@ class Fact
 include TidBits::Options::Configurable
 
 
-attr_reader :depend, :info, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :result
+attr_reader :depend, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :state , :baseProps
 
 cattr_accessor :config, instance_reader: false
 
 
 
-def initialize( default, runTime )
+def initialize( default, runTime, baseProps )
 
 	ownDefault = Fact.config.options( :Facts, :Fact )
 
@@ -25,8 +25,9 @@ def initialize( default, runTime )
 	@mustDepend = *options( :mustDepend )
 	@depend     = *options( :dependOn   )
 	@mandatory  =  options( :mandatory  ) || [] # We don't splat here, so we can test nested keys
-	@info       = {}
-	@result     = {}
+
+	@baseProps  = *baseProps
+
 	@log        = Feedback.get self.class.name, self.class.config
 
 	requireOptions
@@ -47,8 +48,20 @@ def reset
 	@checkPassed   = false
 	@fixPassed     = false
 
+	@state         = {}
+
+	@options.each do | key, value |
+
+		baseProps.has_key? key and next
+
+		@state[ key ] = { expect: value }
+
+	end
+
 end
 
+
+protected
 
 def requireOptions
 
@@ -76,6 +89,7 @@ def requireDepends
 end
 
 
+
 def analyze( update = false )
 
 	# We already did this step and not asked to update, nothing to do
@@ -98,6 +112,12 @@ def analyze( update = false )
 		return           'return'
 
 	end
+
+
+	# Provisional
+	#
+	@analyzed      = true
+	@analyzePassed = true
 
 end
 
@@ -124,6 +144,11 @@ def check( update = false )
 		return         'return'
 
 	end
+
+	# Provisional
+	#
+	@checkPassed = true
+	@checked     = true
 
 end
 
@@ -171,13 +196,41 @@ end
 
 
 
+# Add a dependency to our fact. The dependency won't be added if we already
+# depend on a fact of the same type who's options are a subset of the one
+# we're told to add.
+#
 def dependOn( klass, **opts )
 
-	if @depend.none? { |dep| dep.userset.superset? opts }
+	if @depend.none? { |dep| dep == klass  and  dep.options.superset? opts }
 
 		@depend.push klass.new( **opts )
 
 	end
+
+end
+
+
+
+def expect key
+
+	@state[ key ][ :expect ]
+
+end
+
+
+
+def found key
+
+	@state[ key ][ :found ]
+
+end
+
+
+
+def passed key
+
+	@state[ key ][ :passed ]
 
 end
 

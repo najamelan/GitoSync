@@ -155,17 +155,28 @@ default:
 
       quiet: false
 
-    Path:
+
+    PathExist:
 
       exist      : true
+      mandatory  : [ path ]
+
+
+    Path:
+
       type       : file
       mandatory  : [ path ]
+
+
+    RepoExist:
+
+      mandatory   : [ path ]
+      initialized : true
 
 
     Repo:
 
       mandatory   : [ path ]
-      initialized : true
 
 
 
