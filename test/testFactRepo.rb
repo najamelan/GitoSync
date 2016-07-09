@@ -5,8 +5,9 @@ module Gitomate
 
 class TestFactRepo < Test::Unit::TestCase
 
-RFact    = Facts::Repo
-@@help = TestHelper.new
+RFact   = Facts::Repo
+@@help  = TestHelper.new
+@@brute = TestAFact.new( Facts::Repo )
 
 # Provide a tmp directory variable for the class. This should be created in
 # setup and removed in teardown. Give it a default path that is sure not to exist,
@@ -15,10 +16,10 @@ RFact    = Facts::Repo
 @@tmp    = 'asdfasdf'
 
 
+
 def self.startup
 
 	Facts::Fact.config = @@help.config
-
 
 end
 
@@ -32,6 +33,7 @@ end
 def setup
 
 	@@tmp = @@help.tmpDir
+	@@brute.client = self
 
 end
 
@@ -44,93 +46,83 @@ end
 
 
 
-def check( fact, pass, output, result )
+def check( fact, pass, out, result )
 
-	assert( fact.analyzed           , output.ai )
-	assert( fact.analyzePassed      , output.ai )
+	assert( fact.analyzed           , out.ai )
+	assert( fact.analyzePassed      , out.ai )
 
-	assert( fact.checked            , output.ai )
-	assert( fact.checkPassed == pass, output.ai )
+	assert( fact.checked            , out.ai )
+	assert( fact.checkPassed == pass, out.ai )
 
-	assert_equal( result, fact.result, output.ai )
-
-end
-
-
-
-def test_cloneRepo
-
-	results = @@help.repo( remote: false, name: 'test_cloneRepo' ) do |path, name, output|
-
-		assert( File.exist?( path ), output.ai )
-
-		output
-
-	end
-
-	# Check that all the commands that have been run have returned zero.
-	#
-	results.each do |result|
-
-		# ap result[ :cmd ]
-
-		assert_equal( 0, result[ :status ], results.ai )
-
-	end
-
+	assert_equal( result, fact.result, out.ai )
 
 end
+
+
+
+# def test_cloneRepo
+
+# 	results = @@help.repo( remote: false, name: 'test_cloneRepo' ) do |path, name, out|
+
+# 		assert( File.exist?( path ), out.ai )
+
+# 		out
+
+# 	end
+
+# 	# Check that all the commands that have been run have returned zero.
+# 	#
+# 	results.each do |result|
+
+# 		# ap result[ :cmd ]
+
+# 		assert_equal( 0, result[ :status ], results.ai )
+
+# 	end
+
+
+# end
 
 
 
 def test_repo
 
-	q = @@help.quiet
+	@@help.repo( remote: false, name: 'test_repo' ) do |path, name, out|
 
-	@@help.repo( remote: false, name: 'test_repo' ) do |path, name, output|
-
-		fact = RFact.new( quiet: q, path: path )
-
-		fact.check
-		check( fact, true, output, { initialized: true } )
+		@@brute.check( { path: path }, { clean: true, branch: 'master' }, out )
 
 
-		fact = RFact.new( quiet: q, path: path, initialized: false )
 
-		fact.check
-		check( fact, false, output, { initialized: false } )
+		# # Make it a submodule
+		# #
+		# @@help.repo( remote: false, name: 'test_repoSuper', subs: path ) do |pathS, nameS, outS, subPaths|
 
+		# 	fact = RFact.new( quiet: q, path: pathS )
 
-		# Make it a submodule
-		#
-		@@help.repo( remote: false, name: 'test_repoSuper', subs: path ) do |pathS, nameS, outputS, subPaths|
-
-			fact = RFact.new( quiet: q, path: pathS )
-
-			fact.check
-			check( fact, true, outputS, { initialized: true } )
+		# 	fact.check
+		# 	check( fact, true, outS, { initialized: true } )
 
 
-			fact = RFact.new( quiet: q, path: pathS, initialized: false )
+		# 	fact = RFact.new( quiet: q, path: pathS, initialized: false )
 
-			fact.check
-			check( fact, false, outputS, { initialized: false } )
-
-
-			# Test the submodule
-			#
-			fact = RFact.new( quiet: q, path: subPaths.first )
-
-			fact.check
-			check( fact, true, outputS, { initialized: true } )
+		# 	fact.check
+		# 	check( fact, false, outS, { initialized: false } )
 
 
-			fact = RFact.new( quiet: q, path: subPaths.first, initialized: false )
+		# 	# Test the submodule
+		# 	#
+		# 	fact = RFact.new( quiet: q, path: subPaths.first )
 
-			fact.check
-			check( fact, false, outputS, { initialized: false } )
+		# 	fact.check
+		# 	check( fact, true, outS, { initialized: true } )
 
-		end
+
+		# 	fact = RFact.new( quiet: q, path: subPaths.first, initialized: false )
+
+		# 	fact.check
+		# 	check( fact, false, outS, { initialized: false } )
+
+		# end
 
 	end
 
@@ -138,137 +130,137 @@ end
 
 
 
-def test_workingDir
+# def test_workingDir
 
-	q = @@help.quiet
+# 	q = @@help.quiet
 
-	@@help.repo( remote: false, name: 'test_workingDir' ) do |path, name, output|
+# 	@@help.repo( remote: false, name: 'test_workingDir' ) do |path, name, out|
 
 
-		fact = RFact.new( quiet: q, path: path, clean: true )
+# 		fact = RFact.new( quiet: q, path: path, clean: true )
 
-		fact.check
-		check( fact, true, output, { initialized: true, clean: true } )
+# 		fact.check
+# 		check( fact, true, out, { initialized: true, clean: true } )
 
 
-		fact = RFact.new( quiet: q, path: path, clean: false )
+# 		fact = RFact.new( quiet: q, path: path, clean: false )
 
-		fact.check
-		check( fact, false, output, { initialized: true, clean: false } )
+# 		fact.check
+# 		check( fact, false, out, { initialized: true, clean: false } )
 
 
-		@@help.pollute path
+# 		@@help.pollute path
 
 
-		fact = RFact.new( quiet: q, path: path, clean: true )
+# 		fact = RFact.new( quiet: q, path: path, clean: true )
 
-		fact.check
-		check( fact, false, output, { initialized: true, clean: false } )
+# 		fact.check
+# 		check( fact, false, out, { initialized: true, clean: false } )
 
 
-		fact = RFact.new( quiet: q, path: path, clean: false )
+# 		fact = RFact.new( quiet: q, path: path, clean: false )
 
-		fact.check
-		check( fact, true, output, { initialized: true, clean: true } )
+# 		fact.check
+# 		check( fact, true, out, { initialized: true, clean: true } )
 
 
-	end
+# 	end
 
-end
+# end
 
 
-def test_workingDirSubs
+# def test_workingDirSubs
 
-	q = @@help.quiet
+# 	q = @@help.quiet
 
-	@@help.repo( remote: false, name: 'test_workingDirSubs' ) do |path, name, output|
+# 	@@help.repo( remote: false, name: 'test_workingDirSubs' ) do |path, name, out|
 
-		# Make it a submodule
-		#
-		@@help.repo( remote: false, name: 'test_workingDirSubsSuper', subs: path ) do |pathS, nameS, outputS, subPaths|
+# 		# Make it a submodule
+# 		#
+# 		@@help.repo( remote: false, name: 'test_workingDirSubsSuper', subs: path ) do |pathS, nameS, outS, subPaths|
 
-			fact = RFact.new( quiet: q, path: pathS, clean: true )
+# 			fact = RFact.new( quiet: q, path: pathS, clean: true )
 
-			fact.check
-			check( fact, true, outputS, { initialized: true, clean: true } )
+# 			fact.check
+# 			check( fact, true, outS, { initialized: true, clean: true } )
 
 
-			fact = RFact.new( quiet: q, path: pathS, clean: false )
+# 			fact = RFact.new( quiet: q, path: pathS, clean: false )
 
-			fact.check
-			check( fact, false, outputS, { initialized: true, clean: false } )
+# 			fact.check
+# 			check( fact, false, outS, { initialized: true, clean: false } )
 
 
-			# Pollute submodule
-			@@help.pollute subPaths.first
+# 			# Pollute submodule
+# 			@@help.pollute subPaths.first
 
 
-			fact = RFact.new( quiet: q, path: pathS, clean: true )
+# 			fact = RFact.new( quiet: q, path: pathS, clean: true )
 
-			fact.check
-			check( fact, false, outputS, { initialized: true, clean: false } )
+# 			fact.check
+# 			check( fact, false, outS, { initialized: true, clean: false } )
 
 
-			fact = RFact.new( quiet: q, path: pathS, clean: false )
+# 			fact = RFact.new( quiet: q, path: pathS, clean: false )
 
-			fact.check
-			check( fact, true, outputS, { initialized: true, clean: true } )
+# 			fact.check
+# 			check( fact, true, outS, { initialized: true, clean: true } )
 
 
-			# Test the submodule
-			#
-			fact = RFact.new( quiet: q, path: subPaths.first, clean: true )
+# 			# Test the submodule
+# 			#
+# 			fact = RFact.new( quiet: q, path: subPaths.first, clean: true )
 
-			fact.check
-			check( fact, false, outputS, { initialized: true, clean: false } )
+# 			fact.check
+# 			check( fact, false, outS, { initialized: true, clean: false } )
 
 
-			fact = RFact.new( quiet: q, path: subPaths.first, clean: false )
+# 			fact = RFact.new( quiet: q, path: subPaths.first, clean: false )
 
-			fact.check
-			check( fact, true, outputS, { initialized: true, clean: true } )
+# 			fact.check
+# 			check( fact, true, outS, { initialized: true, clean: true } )
 
-		end
+# 		end
 
-	end
+# 	end
 
-end
+# end
 
 
 
-def test_branch
+# def test_branch
 
-	q = @@help.quiet
+# 	q = @@help.quiet
 
-	@@help.repo( remote: false, name: 'test_branch' ) do |path, name, output|
+# 	@@help.repo( remote: false, name: 'test_branch' ) do |path, name, out|
 
-		fact = RFact.new( quiet: q, path: path, branch: 'master' )
+# 		fact = RFact.new( quiet: q, path: path, branch: 'master' )
 
-		fact.check
-		check( fact, true, output, { initialized: true, branch: true } )
+# 		fact.check
+# 		check( fact, true, out, { initialized: true, branch: true } )
 
 
 
-		fact = RFact.new( quiet: q, path: path, branch: 'dev' )
+# 		fact = RFact.new( quiet: q, path: path, branch: 'dev' )
 
-		fact.check
-		check( fact, false, output, { initialized: true, branch: false } )
+# 		fact.check
+# 		check( fact, false, out, { initialized: true, branch: false } )
 
 
 
-		@@help.pollute path
+# 		@@help.pollute path
 
-		fact = RFact.new( quiet: q, path: path, branch: 'master', clean: false )
+# 		fact = RFact.new( quiet: q, path: path, branch: 'master', clean: false )
 
-		fact.check
-		check( fact, true, output, { initialized: true, branch: true, clean: true } )
+# 		fact.check
+# 		check( fact, true, out, { initialized: true, branch: true, clean: true } )
 
 
-		# Change branch
+# 		# Change branch
 
-	end
+# 	end
 
-end
+# end
 
 end # class TestFactRepo
 end # module Gitomate

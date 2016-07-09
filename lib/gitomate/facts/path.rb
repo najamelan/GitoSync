@@ -10,25 +10,21 @@ module Facts
 #
 class PathExist < Facts::Fact
 
-
 attr_reader :path
 
 
-def initialize( **opts )
+def initialize( path:, **opts )
 
-	super( Fact.config.options( :Facts, :PathExist ), opts, :path )
-
-	@path = options :path
+	super( Fact.config.options( :Facts, :PathExist ), opts, path: path )
 
 end
-
 
 
 def analyze( update = false )
 
 	super == 'return'  and  return @analyzePassed
 
-	@state[ :exit ][ :found ] = File.exists? @path
+	@state[ :exist ][ :found ] = File.exists? @path
 
 	@analyzePassed
 
@@ -89,17 +85,15 @@ end # class  PathExist
 #
 class Path < Facts::Fact
 
-attr_reader :path
+attr_reader :path, :args
 
 
 
-def initialize( **opts )
+def initialize( path:, **opts )
 
-	super( Fact.config.options( :Facts, :Path ), opts, :path, { exist: true } )
+	super( Fact.config.options( :Facts, :Path ), opts, path: path )
 
-	@path = options :path
-
-	dependOn( PathExist, path: @path, type: options( :type ) )
+	dependOn( PathExist, { path: path }, type: options( :type ) )
 
 end
 
@@ -112,13 +106,13 @@ def analyze( update = false )
 
 	stat = File.stat @path
 
-	@state[ :symlink ][ :found ] = stat.symlink?
-	@state[ :type    ][ :found ] = stat.ftype
-	@state[ :mode    ][ :found ] = stat.mode
-	@state[ :uid     ][ :found ] = stat.uid
-	@state[ :gid     ][ :found ] = stat.gid
-	@state[ :owner   ][ :found ] = Etc.getpwuid( @state[ :uid ][ :found ] ).name
-	@state[ :group   ][ :found ] = Etc.getgrgid( @state[ :gid ][ :found ] ).name
+	@state[ :symlink ]  and  @state[ :symlink ][ :found ] = stat.symlink?
+	@state[ :type    ]  and  @state[ :type    ][ :found ] = stat.ftype
+	@state[ :mode    ]  and  @state[ :mode    ][ :found ] = stat.mode
+	@state[ :uid     ]  and  @state[ :uid     ][ :found ] = stat.uid
+	@state[ :gid     ]  and  @state[ :gid     ][ :found ] = stat.gid
+	@state[ :owner   ]  and  @state[ :owner   ][ :found ] = Etc.getpwuid( @state[ :uid ][ :found ] ).name
+	@state[ :group   ]  and  @state[ :group   ][ :found ] = Etc.getgrgid( @state[ :gid ][ :found ] ).name
 
 
 	@analyzePassed
@@ -134,7 +128,7 @@ def check( update = false )
 
 	@state.each do | key, info |
 
-		info[ :passed ] = true
+		@options[ key ] or next
 
 		if found( key ) != expect( key )
 
@@ -146,7 +140,7 @@ def check( update = false )
 
 			when :type
 
-				warn "[#{@info[ :path ]}] should be a #{target.inspect} but is a #{@type.inspect}"
+				warn "[#{@path}] should be a #{expect(key).ai} but is a #{found( key ).ai}"
 
 			end
 

@@ -8,13 +8,13 @@ class Fact
 include TidBits::Options::Configurable
 
 
-attr_reader :depend, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :state , :baseProps
+attr_reader :depend, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :state, :args
 
 cattr_accessor :config, instance_reader: false
 
 
 
-def initialize( default, runTime, baseProps )
+def initialize( default, runTime, **args )
 
 	ownDefault = Fact.config.options( :Facts, :Fact )
 
@@ -24,13 +24,11 @@ def initialize( default, runTime, baseProps )
 
 	@mustDepend = *options( :mustDepend )
 	@depend     = *options( :dependOn   )
-	@mandatory  =  options( :mandatory  ) || [] # We don't splat here, so we can test nested keys
 
-	@baseProps  = *baseProps
-
+	@args       = args
 	@log        = Feedback.get self.class.name, self.class.config
 
-	requireOptions
+	setArgs args
 	requireDepends
 
 	reset
@@ -50,9 +48,10 @@ def reset
 
 	@state         = {}
 
+	# TODO: sometimes facts will want to get options that aren't actually test,
+	#       so we need a way to distinguish them...
+	#
 	@options.each do | key, value |
-
-		baseProps.has_key? key and next
 
 		@state[ key ] = { expect: value }
 
@@ -63,11 +62,15 @@ end
 
 protected
 
-def requireOptions
 
-	@mandatory.each do |key|
 
-		options( key ) or raise "#{self.class.name.inspect} must have the following key: #{key.inspect}."
+def setArgs args
+
+	args.each do |key, value|
+
+		self.instance_variable_set "@#{key}", value
+
+		self.singleton_class.instance_eval { attr_accessor key }
 
 	end
 
@@ -200,11 +203,17 @@ end
 # depend on a fact of the same type who's options are a subset of the one
 # we're told to add.
 #
-def dependOn( klass, **opts )
+def dependOn( klass, args, **opts )
 
-	if @depend.none? { |dep| dep == klass  and  dep.options.superset? opts }
+	if @depend.none? do |dep|
 
-		@depend.push klass.new( **opts )
+		   	klass     ==  dep             \
+		   && args      ==  dep.args        \
+			&& opts.subset?( dep.options )   \
+
+		end
+
+		@depend.push klass.new( **args, **opts )
 
 	end
 

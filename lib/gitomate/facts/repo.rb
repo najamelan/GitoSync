@@ -10,18 +10,16 @@ module Facts
 #
 class RepoInitialized < Facts::Fact
 
-
 attr_reader :repo, :path
 
 
-def initialize( **opts )
+def initialize( path:, **opts )
 
-	super( Fact.config.options( :Facts, :RepoInitialized ), opts, :path )
+	super( Fact.config.options( :Facts, :RepoInitialized ), opts, path: path )
 
-	@path = options :path
 	@repo = ::Gitomate::Repo.new( Fact.config, path: @path )
 
-	dependOn( Path, path: @path, type: 'directory' )
+	dependOn( Path, { path: path }, type: 'directory' )
 
 end
 
@@ -88,19 +86,17 @@ end # class  RepoInitialized
 #
 class Repo < Facts::Fact
 
-
-attr_reader :repo, :path
-
+attr_reader :repo
 
 
-def initialize( **opts )
 
-	super( Fact.config.options( :Facts, :Repo ), opts, :path )
+def initialize( path:, **opts )
 
-	@path = options :path
+	super( Fact.config.options( :Facts, :Repo ), opts, path: path )
+
 	@repo = ::Gitomate::Repo.new( Fact.config, path: @path )
 
-	dependOn( RepoInitialized, path: @path )
+	dependOn( RepoInitialized, { path: path } )
 
 end
 
@@ -110,8 +106,9 @@ def analyze( update = false )
 
 	super == 'return'  and  return @analyzePassed
 
-	@state[ :branch ][ :found ] = @repo.branch
-	@state[ :clean  ][ :found ] = @repo.workingDirClean?
+
+	@state[ :branch ]  and  @state[ :branch ][ :found ] = @repo.branch
+	@state[ :clean  ]  and  @state[ :clean  ][ :found ] = @repo.workingDirClean?
 
 	@analyzePassed
 
@@ -125,6 +122,8 @@ def check( update = false )
 
 
 	@state.each do | key, info |
+
+		@options[ key ] or next
 
 		info[ :passed ] = true
 

@@ -159,24 +159,26 @@ default:
     PathExist:
 
       exist      : true
-      mandatory  : [ path ]
 
 
     Path:
 
       type       : file
-      mandatory  : [ path ]
 
 
-    RepoExist:
+    RepoInitialized:
 
-      mandatory   : [ path ]
       initialized : true
 
 
-    Repo:
+    Repo: {}
 
-      mandatory   : [ path ]
+
+
+    TestAFact:
+
+      inverseBool : true
+      mangleString: true
 
 
 
