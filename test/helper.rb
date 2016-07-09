@@ -184,6 +184,26 @@ end
 
 
 
+def changeBranch( path, branch )
+
+	out = []
+
+	Dir.chdir path
+	out += cmd "git co #{branch}"
+
+	# TODO: this method needs fleshing out, as changing branches might also fail
+	#       if there are merge conflicts with the working dir
+	#
+	out.last[ :status ] == 0 or out += cmd( "git co -b #{branch}" )
+
+	out += cmd "git status"
+
+	out
+
+end
+
+
+
 def gitoCmd( cmd )
 
 	cmd "ssh #{@host} #{cmd}"

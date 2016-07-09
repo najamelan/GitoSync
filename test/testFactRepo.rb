@@ -156,7 +156,9 @@ def test_branch
 
 		@@brute.check( { path: path }, { clean: true, branch: 'master' }, out, { branch: 'dev' } )
 
-		# Change branch
+		out += @@help.changeBranch path, 'dev'
+
+		@@brute.check( { path: path }, { clean: true, branch: 'dev' }, out, { branch: 'master' } )
 
 	end
 
