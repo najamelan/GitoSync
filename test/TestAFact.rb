@@ -62,7 +62,7 @@ end
 #         #
 #         @@brute.check( { path: path, type: :directory, empty: true } )
 #
-def check( baseProps, state, msg )
+def check( baseProps, state, msg, failures = {} )
 
 	keys         = state.keys
 	combinations = ( 0..keys.size ).flat_map{ |size| keys.combination( size ).to_a }
@@ -112,12 +112,24 @@ def check( baseProps, state, msg )
 		query.each do |key, value|
 
 			# if it's not a boolean, we're not interested for now
+			# unless it's in the failures list
 			#
-			!!value == value or next
+			if !!value == value
 
-			query[ key ] = !value
+				query[ key ] = !value
 
-			debug = "#{msg.ai}\nThe check should FAIL. Negated key: #{key}.\nCalled #{@type.ai} with: #{query.merge( baseProps ).ai}"
+			elsif  failures.has_key?( key )
+
+				query[ key ] = failures[ key ]
+
+			else
+
+				next
+
+			end
+
+
+			debug = "#{msg.ai}\nThe check should FAIL. Negated/changed key: #{key}.\nCalled #{@type.ai} with: #{query.merge( baseProps ).ai}"
 			fact  = @type.new( query.merge baseProps )
 			fact.check
 

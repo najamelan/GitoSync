@@ -150,17 +150,17 @@ end
 
 
 
-# def test_branch
+def test_branch
 
-# 	@@help.repo( remote: false, name: 'test_branch' ) do |path, name, out|
+	@@help.repo( remote: false, name: 'test_branch' ) do |path, name, out|
 
-# 		@@brute.check( { path: path }, { clean: false, branch: 'master' }, out, { branch: dev } )
+		@@brute.check( { path: path }, { clean: true, branch: 'master' }, out, { branch: 'dev' } )
 
-# 		# Change branch
+		# Change branch
 
-# 	end
+	end
 
-# end
+end
 
 end # class TestFactRepo
 end # module Gitomate
