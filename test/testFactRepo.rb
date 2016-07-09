@@ -92,37 +92,17 @@ def test_repo
 		@@brute.check( { path: path }, { clean: true, branch: 'master' }, out )
 
 
+		# Make it a submodule
+		#
+		@@help.repo( remote: false, name: 'test_repoSuper', subs: path ) do |pathS, nameS, outS, subPaths|
 
-		# # Make it a submodule
-		# #
-		# @@help.repo( remote: false, name: 'test_repoSuper', subs: path ) do |pathS, nameS, outS, subPaths|
+			@@brute.check( { path: pathS }, { clean: true, branch: 'master' }, outS )
 
-		# 	fact = RFact.new( quiet: q, path: pathS )
+			# Test the submodule
+			#
+			@@brute.check( { path: subPaths.first }, { clean: true, branch: 'master' }, outS )
 
-		# 	fact.check
-		# 	check( fact, true, outS, { initialized: true } )
-
-
-		# 	fact = RFact.new( quiet: q, path: pathS, initialized: false )
-
-		# 	fact.check
-		# 	check( fact, false, outS, { initialized: false } )
-
-
-		# 	# Test the submodule
-		# 	#
-		# 	fact = RFact.new( quiet: q, path: subPaths.first )
-
-		# 	fact.check
-		# 	check( fact, true, outS, { initialized: true } )
-
-
-		# 	fact = RFact.new( quiet: q, path: subPaths.first, initialized: false )
-
-		# 	fact.check
-		# 	check( fact, false, outS, { initialized: false } )
-
-		# end
+		end
 
 	end
 
@@ -130,131 +110,51 @@ end
 
 
 
-# def test_workingDir
+def test_workingDir
 
-# 	q = @@help.quiet
+	@@help.repo( remote: false, name: 'test_workingDir' ) do |path, name, out|
 
-# 	@@help.repo( remote: false, name: 'test_workingDir' ) do |path, name, out|
+		@@help.pollute path
 
+		@@brute.check( { path: path }, { clean: false, branch: 'master' }, out )
 
-# 		fact = RFact.new( quiet: q, path: path, clean: true )
+	end
 
-# 		fact.check
-# 		check( fact, true, out, { initialized: true, clean: true } )
-
-
-# 		fact = RFact.new( quiet: q, path: path, clean: false )
-
-# 		fact.check
-# 		check( fact, false, out, { initialized: true, clean: false } )
+end
 
 
-# 		@@help.pollute path
+def test_workingDirSubs
+
+	@@help.repo( remote: false, name: 'test_workingDirSubs' ) do |path, name, out|
+
+		# Make it a submodule
+		#
+		@@help.repo( remote: false, name: 'test_workingDirSubsSuper', subs: path ) do |pathS, nameS, outS, subPaths|
+
+			# Pollute submodule
+			#
+			@@help.pollute subPaths.first
+
+			@@brute.check( { path: pathS }, { clean: false, branch: 'master' }, outS )
 
 
-# 		fact = RFact.new( quiet: q, path: path, clean: true )
+			# Test the submodule
+			#
+			@@brute.check( { path: subPaths.first }, { clean: false, branch: 'master' }, outS )
 
-# 		fact.check
-# 		check( fact, false, out, { initialized: true, clean: false } )
+		end
 
+	end
 
-# 		fact = RFact.new( quiet: q, path: path, clean: false )
-
-# 		fact.check
-# 		check( fact, true, out, { initialized: true, clean: true } )
-
-
-# 	end
-
-# end
-
-
-# def test_workingDirSubs
-
-# 	q = @@help.quiet
-
-# 	@@help.repo( remote: false, name: 'test_workingDirSubs' ) do |path, name, out|
-
-# 		# Make it a submodule
-# 		#
-# 		@@help.repo( remote: false, name: 'test_workingDirSubsSuper', subs: path ) do |pathS, nameS, outS, subPaths|
-
-# 			fact = RFact.new( quiet: q, path: pathS, clean: true )
-
-# 			fact.check
-# 			check( fact, true, outS, { initialized: true, clean: true } )
-
-
-# 			fact = RFact.new( quiet: q, path: pathS, clean: false )
-
-# 			fact.check
-# 			check( fact, false, outS, { initialized: true, clean: false } )
-
-
-# 			# Pollute submodule
-# 			@@help.pollute subPaths.first
-
-
-# 			fact = RFact.new( quiet: q, path: pathS, clean: true )
-
-# 			fact.check
-# 			check( fact, false, outS, { initialized: true, clean: false } )
-
-
-# 			fact = RFact.new( quiet: q, path: pathS, clean: false )
-
-# 			fact.check
-# 			check( fact, true, outS, { initialized: true, clean: true } )
-
-
-# 			# Test the submodule
-# 			#
-# 			fact = RFact.new( quiet: q, path: subPaths.first, clean: true )
-
-# 			fact.check
-# 			check( fact, false, outS, { initialized: true, clean: false } )
-
-
-# 			fact = RFact.new( quiet: q, path: subPaths.first, clean: false )
-
-# 			fact.check
-# 			check( fact, true, outS, { initialized: true, clean: true } )
-
-# 		end
-
-# 	end
-
-# end
+end
 
 
 
 # def test_branch
 
-# 	q = @@help.quiet
-
 # 	@@help.repo( remote: false, name: 'test_branch' ) do |path, name, out|
 
-# 		fact = RFact.new( quiet: q, path: path, branch: 'master' )
-
-# 		fact.check
-# 		check( fact, true, out, { initialized: true, branch: true } )
-
-
-
-# 		fact = RFact.new( quiet: q, path: path, branch: 'dev' )
-
-# 		fact.check
-# 		check( fact, false, out, { initialized: true, branch: false } )
-
-
-
-# 		@@help.pollute path
-
-# 		fact = RFact.new( quiet: q, path: path, branch: 'master', clean: false )
-
-# 		fact.check
-# 		check( fact, true, out, { initialized: true, branch: true, clean: true } )
-
+# 		@@brute.check( { path: path }, { clean: false, branch: 'master' }, out, { branch: dev } )
 
 # 		# Change branch
 
