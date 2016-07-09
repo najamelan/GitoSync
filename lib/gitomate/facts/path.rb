@@ -128,7 +128,7 @@ def check( update = false )
 
 	@state.each do | key, info |
 
-		@options[ key ] or next
+		@options.has_key?( key ) or next
 
 		if found( key ) != expect( key )
 

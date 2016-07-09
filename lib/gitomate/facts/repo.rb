@@ -123,7 +123,7 @@ def check( update = false )
 
 	@state.each do | key, info |
 
-		@options[ key ] or next
+		@options.has_key?( key ) or next
 
 		info[ :passed ] = true
 
@@ -137,11 +137,12 @@ def check( update = false )
 
 			when :branch
 
-				warn "#{@repo.path.inspect} should be on branch #{target}, but is on #{@state[key].inspect}."
+				warn "#{@path.ai} should be on branch #{expect( key )}, but is on #{@state[ key ][ :found ].ai}."
 
 			when :clean
 
-				warn "#{@repo.path.inspect} should have a clean working directory."
+				expect( key ) and warn "#{@path.ai} should have a clean working directory."
+				expect( key ) or  warn "#{@path.ai} should NOT have a clean working directory."
 
 			end
 
