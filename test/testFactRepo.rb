@@ -5,9 +5,9 @@ module Gitomate
 
 class TestFactRepo < Test::Unit::TestCase
 
-RFact   = Facts::Repo
+RFact   = Facts::Git::Repo
 @@help  = TestHelper.new
-@@brute = TestAFact.new( Facts::Repo )
+@@brute = TestAFact.new( RFact )
 
 # Provide a tmp directory variable for the class. This should be created in
 # setup and removed in teardown. Give it a default path that is sure not to exist,

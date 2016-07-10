@@ -155,6 +155,11 @@ default:
 
       quiet: false
 
+    TestAFact:
+
+      inverseBool : true
+      mangleString: true
+
 
     PathExist:
 
@@ -166,27 +171,36 @@ default:
       type: file
 
 
-    RepoInitialized:
+    Git:
 
-      initialized : true
+      RepoExist:
 
-
-    Repo: {}
-
-    RepoRemoteExist:
-
-      exist: true
-
-    RepoRemote:
-
-      name: origin
+        exist: true
 
 
+      Repo: {}
 
-    TestAFact:
 
-      inverseBool : true
-      mangleString: true
+      RemoteExist:
+
+        exist: true
+
+
+      Remote:
+
+        name: origin
+
+
+      BranchExist:
+
+        exist: true
+
+
+      Branch:
+
+        name: master
+
+
 
 
 
