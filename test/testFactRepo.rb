@@ -45,46 +45,6 @@ def teardown
 end
 
 
-
-def check( fact, pass, out, result )
-
-	assert( fact.analyzed           , out.ai )
-	assert( fact.analyzePassed      , out.ai )
-
-	assert( fact.checked            , out.ai )
-	assert( fact.checkPassed == pass, out.ai )
-
-	assert_equal( result, fact.result, out.ai )
-
-end
-
-
-
-def test_cloneRepo
-
-	results = @@help.repo( remote: false, name: 'test_cloneRepo' ) do |path, name, out|
-
-		assert( File.exist?( path ), out.ai )
-
-		out
-
-	end
-
-	# Check that all the commands that have been run have returned zero.
-	#
-	results.each do |result|
-
-		# ap result[ :cmd ]
-
-		assert_equal( 0, result[ :status ], results.ai )
-
-	end
-
-
-end
-
-
-
 def test_repo
 
 	@@help.repo( remote: false, name: 'test_repo' ) do |path, name, out|
