@@ -49,18 +49,18 @@ def test_repo
 
 	@@help.repo( remote: false, name: 'test_repo' ) do |path, name, out|
 
-		@@brute.check( { path: path }, { clean: true, branch: 'master' }, out )
+		@@brute.check( { path: path }, { clean: true, head: 'master' }, out )
 
 
 		# Make it a submodule
 		#
 		@@help.repo( remote: false, name: 'test_repoSuper', subs: path ) do |pathS, nameS, outS, subPaths|
 
-			@@brute.check( { path: pathS }, { clean: true, branch: 'master' }, outS )
+			@@brute.check( { path: pathS }, { clean: true, head: 'master' }, outS )
 
 			# Test the submodule
 			#
-			@@brute.check( { path: subPaths.first }, { clean: true, branch: 'master' }, outS )
+			@@brute.check( { path: subPaths.first }, { clean: true, head: 'master' }, outS )
 
 		end
 
@@ -76,7 +76,7 @@ def test_workingDir
 
 		@@help.pollute path
 
-		@@brute.check( { path: path }, { clean: false, branch: 'master' }, out )
+		@@brute.check( { path: path }, { clean: false, head: 'master' }, out )
 
 	end
 
@@ -95,12 +95,12 @@ def test_workingDirSubs
 			#
 			@@help.pollute subPaths.first
 
-			@@brute.check( { path: pathS }, { clean: false, branch: 'master' }, outS )
+			@@brute.check( { path: pathS }, { clean: false, head: 'master' }, outS )
 
 
 			# Test the submodule
 			#
-			@@brute.check( { path: subPaths.first }, { clean: false, branch: 'master' }, outS )
+			@@brute.check( { path: subPaths.first }, { clean: false, head: 'master' }, outS )
 
 		end
 
@@ -110,15 +110,15 @@ end
 
 
 
-def test_branch
+def test_head
 
 	@@help.repo( remote: false, name: 'test_branch' ) do |path, name, out|
 
-		@@brute.check( { path: path }, { clean: true, branch: 'master' }, out, { branch: 'dev' } )
+		@@brute.check( { path: path }, { clean: true, head: 'master' }, out, { head: 'dev' } )
 
 		out += @@help.changeBranch path, 'dev'
 
-		@@brute.check( { path: path }, { clean: true, branch: 'dev' }, out, { branch: 'master' } )
+		@@brute.check( { path: path }, { clean: true, head: 'dev' }, out, { head: 'master' } )
 
 	end
 

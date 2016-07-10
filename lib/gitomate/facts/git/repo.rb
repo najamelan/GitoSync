@@ -75,13 +75,13 @@ end # class  RepoExist
 
 # Options (* means mandatory)
 #
-# path*       : Path to the repository directory (workingDir with .git)
-# branch      : string
-# clean       : bool    (whether the working dir is clean)
+# path* : Path to the repository directory (workingDir with .git)
+# head  : string  (the ref name head should point to, eg. a branch name)
+# clean : bool    (whether the working dir is clean)
 #
 # TODO: currently we won't check anything if the exist option doesn't correspond with reality.
 #       However, we don't do input validation to keep people from asking us to test properties on a
-#       repo that they claim should not be exist, which might be confusing when they check the results.
+#       repo that they claim should not exist, which might be confusing when they check the results.
 #
 #       In general we should have some sort of feedback mechanism to report the reason for failures to clients.
 #
@@ -108,8 +108,8 @@ def analyze( update = false )
 	super == 'return'  and  return @analyzePassed
 
 
-	@state[ :branch ]  and  @state[ :branch ][ :found ] = @repo.branch
-	@state[ :clean  ]  and  @state[ :clean  ][ :found ] = @repo.workingDirClean?
+	@state[ :head  ]  and  @state[ :head  ][ :found ] = @repo.branch
+	@state[ :clean ]  and  @state[ :clean ][ :found ] = @repo.workingDirClean?
 
 	@analyzePassed
 
@@ -136,7 +136,7 @@ def check( update = false )
 
 			case key
 
-			when :branch
+			when :head
 
 				warn "#{@path.ai} should be on branch #{expect( key )}, but is on #{@state[ key ][ :found ].ai}."
 
