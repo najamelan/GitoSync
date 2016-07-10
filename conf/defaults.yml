@@ -158,12 +158,12 @@ default:
 
     PathExist:
 
-      exist      : true
+      exist: true
 
 
     Path:
 
-      type       : file
+      type: file
 
 
     RepoInitialized:
@@ -172,6 +172,14 @@ default:
 
 
     Repo: {}
+
+    RepoRemoteExist:
+
+      exist: true
+
+    RepoRemote:
+
+      name: origin
 
 
 
