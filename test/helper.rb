@@ -110,7 +110,7 @@ end
 
 
 
-def repo( remote: true, name: randomString, subs: [], &block )
+def repo( name = randomString, &block )
 
 	block_given? or raise ArgumentError.new 'Need block'
 
@@ -126,43 +126,46 @@ def repo( remote: true, name: randomString, subs: [], &block )
 	out += [ { cmd: "cd #{repoPath}", status: 0 } ]
 	Dir.chdir repoPath
 
-
-	subPaths = []
-	subs     = *subs
-
-	subs.each do |src|
-
-		path = randomString
-		out += cmd  "git submodule add #{repoPath} #{path}"
-		out += cmd  "git submodule update --init --recursive #{path}"
-		out += cmd  "git commit -m'Add submodule #{path}'"
-
-		subPaths << "#{repoPath}/#{path}"
-
-	end
-
-
-	if remote
-
-		out += cmd     "git remote add -m master origin #{@host}:#{repoName}"
-		out += gitoCmd "create #{repoName}"
-		out += cmd     "git push --set-upstream origin master"
-
-	end
-
-	yield repoPath, repoName, out, subPaths
+	yield repoPath, repoName, out
 
 
 ensure
 
-	FileUtils.remove_entry_secure tmpDir
+	Dir.chdir repoPath
+	remotes = `git remote -v` =~ /#{@host}/
 
-	if remote
+	if remotes
 
 		out += gitoCmd "D unlock #{repoName}"
 		out += gitoCmd "D rm     #{repoName}"
 
 	end
+
+
+	FileUtils.remove_entry_secure tmp
+
+	out
+
+end
+
+
+
+def addSubmodule( path, src )
+
+	out = []
+
+	Dir.chdir path
+
+	subpath = randomString
+	out += cmd  "git submodule add #{src} #{subpath}"
+	out += cmd  "git submodule update --init --recursive #{subpath}"
+	out += cmd  "git commit -m'Add submodule #{subpath}'"
+
+	subPath = "#{path}/#{subpath}"
+
+	return subPath, out
+
+end
 
 	out
 

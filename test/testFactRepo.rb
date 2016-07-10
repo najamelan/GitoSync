@@ -45,22 +45,24 @@ def teardown
 end
 
 
-def test_repo
+def test_00repo
 
-	@@help.repo( remote: false, name: 'test_repo' ) do |path, name, out|
+	@@help.repo( 'test_00repo' ) do |pathS, nameS, outS|
 
-		@@brute.check( { path: path }, { clean: true, head: 'master' }, out )
+		@@brute.check( { path: pathS }, { clean: true, head: 'master' }, outS )
 
 
 		# Make it a submodule
 		#
-		@@help.repo( remote: false, name: 'test_repoSuper', subs: path ) do |pathS, nameS, outS, subPaths|
+		@@help.repo( 'test_repoSub' ) do |path, name, out|
 
-			@@brute.check( { path: pathS }, { clean: true, head: 'master' }, outS )
+			subPath, subOut = @@help.addSubmodule pathS, path
+
+			@@brute.check( { path: pathS }, { clean: true, head: 'master' }, outS + out + subOut )
 
 			# Test the submodule
 			#
-			@@brute.check( { path: subPaths.first }, { clean: true, head: 'master' }, outS )
+			@@brute.check( { path: subPath }, { clean: true, head: 'master' }, outS + out + subOut )
 
 		end
 
@@ -70,9 +72,9 @@ end
 
 
 
-def test_workingDir
+def test_01workingDir
 
-	@@help.repo( remote: false, name: 'test_workingDir' ) do |path, name, out|
+	@@help.repo( 'test_01workingDir' ) do |path, name, out|
 
 		@@help.pollute path
 
@@ -83,24 +85,26 @@ def test_workingDir
 end
 
 
-def test_workingDirSubs
+def test_02workingDirSubs
 
-	@@help.repo( remote: false, name: 'test_workingDirSubs' ) do |path, name, out|
+	@@help.repo( 'test_02workingDirSubs' ) do |pathS, nameS, outS|
 
 		# Make it a submodule
 		#
-		@@help.repo( remote: false, name: 'test_workingDirSubsSuper', subs: path ) do |pathS, nameS, outS, subPaths|
+		@@help.repo( 'test_02workingDirSubsSub' ) do |path, name, out|
+
+			subPath, subOut = @@help.addSubmodule pathS, path
 
 			# Pollute submodule
 			#
-			@@help.pollute subPaths.first
+			@@help.pollute subPath
 
-			@@brute.check( { path: pathS }, { clean: false, head: 'master' }, outS )
+			@@brute.check( { path: pathS }, { clean: false, head: 'master' }, outS + out + subOut )
 
 
 			# Test the submodule
 			#
-			@@brute.check( { path: subPaths.first }, { clean: false, head: 'master' }, outS )
+			@@brute.check( { path: subPath }, { clean: false, head: 'master' }, outS + out + subOut )
 
 		end
 
@@ -110,9 +114,9 @@ end
 
 
 
-def test_head
+def test_03head
 
-	@@help.repo( remote: false, name: 'test_branch' ) do |path, name, out|
+	@@help.repo( 'test_03head' ) do |path, name, out|
 
 		@@brute.check( { path: path }, { clean: true, head: 'master' }, out, { head: 'dev' } )
 
