@@ -3,6 +3,7 @@ module Gitomate
 
 class TestThorfile < Test::Unit::TestCase
 
+include TidBits::Options::Configurable
 
 
 def test_installer

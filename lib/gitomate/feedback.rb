@@ -5,15 +5,15 @@ class Feedback
 
 include TidBits::Options::Configurable
 
-@@instance = {}
+@@instances = {}
 
 
 # Note that overriding options only works once for each progname
 #
-def self.get( progname, config )
+def self.get( progname )
 
 	progname.remove!( /Gitomate::/ )
-	@@instance[ progname ] || @@instance[ progname ] = self.new( progname, config )
+	@@instances[ progname ] || @@instances[ progname ] = self.new( progname )
 
 end
 
@@ -56,9 +56,9 @@ end
 
 
 private
-def initialize( progname, config )
+def initialize( progname, **opts )
 
-	setupOptions( config.defaults( :feedback ), config.userset( :feedback ) )
+	setupOptions( opts )
 
 
 	@loggers = []

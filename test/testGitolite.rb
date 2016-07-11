@@ -5,6 +5,9 @@ module Gitomate
 
 class TestGitolite < Test::Unit::TestCase
 
+include TidBits::Options::Configurable
+
+
 @@helper = TestHelper.new
 
 

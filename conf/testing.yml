@@ -1,1 +1,14 @@
-testing: {}
+testing:
+
+  TestFactRepo  : {}
+
+
+  TestAFact:
+
+    inverseBool : true
+    mangleString: true
+
+
+  TestGitolite  : {}
+  TestTestHelper: {}
+  TestThorfile  : {}

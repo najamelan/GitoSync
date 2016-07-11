@@ -10,23 +10,17 @@ include TidBits::Options::Configurable
 
 attr_reader :depend, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :state, :args
 
-cattr_accessor :config, instance_reader: false
 
 
+def initialize( opts, **args )
 
-def initialize( default, runTime, **args )
-
-	ownDefault = Fact.config.options( :Facts, :Fact )
-
-	ownDefault.deep_merge! default
-
-	setupOptions( ownDefault, runTime )
+	setupOptions( opts )
 
 	@mustDepend = *options( :mustDepend )
 	@depend     = *options( :dependOn   )
 
 	@args       = args
-	@log        = Feedback.get self.class.name, self.class.config
+	@log        = Feedback.get self.class.name
 
 	setArgs args
 	requireDepends

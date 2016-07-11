@@ -5,25 +5,12 @@ class Config
 
 include TidBits::Options::Configurable
 
-@@instance = nil
-
-
-
-def self.get( profile = 'default', files = [] )
-
-	@@instance or @@instance = self.new( profile, files )
-	@@instance.dup
-
-end
-
-
 # This creates the Config object.
 #
 # First determine which configfiles to include.
 # 1. The default config in installdir/conf + descendants
 # 2. The config files specified in files passed on the command line + descendants
 #
-private
 def initialize( profile, fromCmdLine = [] )
 
 	@parsedFiles = []
@@ -39,9 +26,8 @@ def initialize( profile, fromCmdLine = [] )
 
 	# If defaults reference more config files, put them in userCfg
 	#
-	fromFile = default.dig( :include )
-
-	userCfg = deepParseFiles( fromFile )
+	fromFile = default.dig(    :include )
+	userCfg  = deepParseFiles( fromFile )
 
 
 	# Put everything from the files passed on the command line in extras
@@ -56,12 +42,19 @@ def initialize( profile, fromCmdLine = [] )
 
 	# Merges them into options
 	#
-	setupOptions default, userCfg
 
+	@allDefaults = default.deep_symbolize_keys
+	@allUserset  = userCfg.deep_symbolize_keys
+	@allOptions  = @allDefaults.deep_merge @allUserset
 
 	# Resolve the profile with it's inheritance and discard the rest
 	#
 	resolveInheritance
+
+
+	# Setup the defaults for all classes
+	#
+	setupDefaults profile
 
 
 	# @@log ||= Feedback.get( 'Config' )
@@ -74,6 +67,37 @@ def initialize( profile, fromCmdLine = [] )
 end
 
 
+def setupDefaults profile
+
+	Feedback                .defaults = options( :Feedback            )
+	# Sync                    .defaults = options( :Sync                )
+
+	Git::Repo               .defaults = options( :Git  , :Repo        )
+	# Git::Remote             .defaults = options( :Git  , :Remote      )
+
+	Facts::Fact             .defaults = options( :Facts, :Fact        )
+	Facts::PathExist        .defaults = options( :Facts, :PathExist   )
+	Facts::Path             .defaults = options( :Facts, :Path        )
+
+	Facts::Git::RepoExist   .defaults = options( :Facts, :Git, :RepoExist   )
+	Facts::Git::Repo        .defaults = options( :Facts, :Git, :Repo        )
+	Facts::Git::RemoteExist .defaults = options( :Facts, :Git, :RemoteExist )
+	Facts::Git::Remote      .defaults = options( :Facts, :Git, :Remote      )
+	# Facts::Git::BranchExist .defaults = options( :Facts, :Git, :BranchExist )
+	# Facts::Git::Branch      .defaults = options( :Facts, :Git, :Branch      )
+
+	profile == :testing or return
+
+	TestFactRepo   .defaults = options( :TestFactRepo   )
+	TestAFact      .defaults = options( :TestAFact      )
+	TestGitolite   .defaults = options( :TestGitolite   )
+	TestTestHelper .defaults = options( :TestTestHelper )
+	TestThorfile   .defaults = options( :TestThorfile   )
+
+end
+
+
+private
 
 def deepParseFiles( files )
 
@@ -166,9 +190,9 @@ def resolveInheritance
 	#
 	@profile == :default  and  return mergeProfiles
 
-	profile = @profile
+	profile       = @profile
 	@inheritance  = [ profile ]
-	base    = @options.dig( profile, :inherit )
+	base          = @allOptions.dig( profile, :inherit )
 
 	base or return mergeProfiles
 
@@ -177,7 +201,7 @@ def resolveInheritance
 
 	while base != :default
 
-		@options.dig base  or  STDERR.puts "WARNING: Config profile [#{profile}] tries to inherit from unexisting profile [#{base}]."
+		@allOptions.dig base  or  STDERR.puts "WARNING: Config profile [#{profile}] tries to inherit from unexisting profile [#{base}]."
 
 		@inheritance.include? base  and  raise "WARNING: Config profile [#{profile}] tries to inherit from profile [#{base}] but [#{base}] is already in the inheritance chain."
 
@@ -185,7 +209,7 @@ def resolveInheritance
 
 		profile = base
 
-		base = @options.dig( profile, :inherit )
+		base = @allOptions.dig( profile, :inherit )
 		base or break
 		base = base.to_sym
 
@@ -203,13 +227,9 @@ def mergeProfiles
 	@inheritance.unshift :default
 
 
-	@allDefaults = @defaults.dup
-	@allUserset  = @userset .dup
-	@allOptions  = @options .dup
-
-	@defaults = {}
-	@userset  = {}
-	@options  = {}
+	defaults = {}
+	userset  = {}
+	options  = {}
 
 
 	@inheritance.each do |parent|
@@ -217,11 +237,14 @@ def mergeProfiles
 		# We will extract only the content of the profiles, without keeping the rest, so in the end
 		# we will only keep the currently running profile. The original will be stored in @allDefaults, etc.
 		#
-		@defaults.deep_merge!( @allDefaults.dig( parent ) || {} )
-		@userset .deep_merge!( @allUserset .dig( parent ) || {} )
-		@options .deep_merge!( @allOptions .dig( parent ) || {} )
+		defaults.deep_merge!( @allDefaults.dig( parent ) || {} )
+		userset .deep_merge!( @allUserset .dig( parent ) || {} )
+		options .deep_merge!( @allOptions .dig( parent ) || {} )
 
 	end
+
+	self.class.defaults = defaults
+	setupOptions userset
 
 end
 

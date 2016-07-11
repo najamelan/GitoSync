@@ -4,9 +4,9 @@ class  Remote
 
 include TidBits::Options::Configurable
 
-def initialize( config, rug, git, default, userOpts = {} )
+def initialize( config, rug, git, default, opts )
 
-	setupOptions( default, userOpts )
+	setupOptions( opts )
 
 	@log = Feedback.get( 'Remote', config )
 

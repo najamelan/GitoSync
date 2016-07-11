@@ -5,6 +5,8 @@ module Gitomate
 
 class TestTestHelper < Test::Unit::TestCase
 
+include TidBits::Options::Configurable
+
 RFact   = Facts::Git::Repo
 @@help  = TestHelper.new
 @@brute = TestAFact.new( RFact )
@@ -19,7 +21,6 @@ RFact   = Facts::Git::Repo
 
 def self.startup
 
-	Facts::Fact.config = @@help.config
 
 end
 

@@ -16,11 +16,11 @@ attr_reader :repo
 
 def initialize( path:, name:, **opts )
 
-	super( Fact.config.options( :Facts, :Git, :RemoteExist ), opts, path: path, name: name )
+	super( opts, path: path, name: name )
 
-	dependOn( RepoInitialized, { path: path } )
+	dependOn( RepoExist, { path: path } )
 
-	@repo    = ::Gitomate::Repo.new( Fact.config, path: @path )
+	@repo    = Gitomate::Git::Repo.new( path: path )
 	@remotes = @repo.remotes
 
 end
@@ -91,11 +91,11 @@ attr_reader :repo
 
 def initialize( path:, name:, merge: false, **opts )
 
-	super( Fact.config.options( :Facts, :Git, :Remote ), opts, path: path, name: name, merge: merge )
+	super( opts, path: path, name: name, merge: merge )
 
 	dependOn( RemoteExist, { path: path, name: name } )
 
-	@repo   = ::Gitomate::Repo.new( Fact.config, path: @path )
+	@repo   = Gitomate::Git::Repo.new( path: path )
 	@remote = @repo.remotes[ name ]
 
 end

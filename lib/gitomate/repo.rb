@@ -7,45 +7,41 @@ include TidBits::Options::Configurable
 
 
 
-# The rush object for the repo path
+# The string path for the repo
 #
 attr_reader :path
 
-# The string path for the repo
+# An array of Gitomate::Remote objects for the repository.
 #
-attr_reader :paths
+attr_reader :remotes
 
 
 
 
 
-def initialize( config, **userOpts )
+def initialize( config, **opts )
 
-	setupOptions( config.options( :repo ), userOpts )
+	setupOptions( opts )
 
-	@config  = config
-	@log     = Feedback.get( self.class.name, @config )
-	@path    = options[ :path ]
+	@config   = config
+	@log      = Feedback.get( self.class.name, @config )
+	@path     = options( :path )
+	@remotes  = []
+	@branches = []
 
 	# Create a backend if the repo path exist and is a repo
 	#
 	begin
 
-		@rug      = Rugged::Repository.new( @path )
-		@remotes  = @rug.remotes
+		@rug     = Rugged::Repository.new( @path )
+		remotes  = @rug.remotes
 
-		@git      = Git::Base.open @path
+		@git     = Git::Base.open @path
 
 
-		# Create the remote if it exists in the repo
-		#
-		if @remotes[ options( :remote ) ]
+		remotes.each do |remote|
 
-			@remote = Remote.new( @config, @remotes[ options( :remote ) ], @git, defaults, userset )
-
-		else
-
-			@remote = nil
+			@remotes << Remote.new( @config, remote, @git, defaults, userset )
 
 		end
 
@@ -61,7 +57,6 @@ end
 
 def pathExists?() File.exist? @path end
 def valid?	   () !!@rug            end
-
 
 
 def canConnect?
@@ -118,8 +113,6 @@ def branch
 		nil
 
 	end
-
-
 
 end
 

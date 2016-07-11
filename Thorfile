@@ -21,29 +21,11 @@ class_option                                \
 
 
 
-def initialize( *args )
-
-	super
-
-	pp "Using profile #{options[ :profile ]}"
-
-
-	@config  = ::Gitomate::Config  .get( options[ :profile ] )
-	@log     = ::Gitomate::Feedback.get( 'Thorfile', @config )
-
-	@binDirs  = @config.options( :install, :binDirs   )
-	@binDirs.is_a?( Array ) or @binDirs = [ @binDirs ]
-
-	@confDirs = @config.options( :install, :confDirs )
-	@confDirs.is_a?( Array ) or @confDirs = [ @confDirs ]
-
-end
-
-
-
 desc 'install', 'Installs the application on the system'
 
 def install
+
+	setup options[ :profile ]
 
 	begin
 
@@ -84,6 +66,8 @@ end
 desc 'uninstall', 'Uninstalls the application from the system'
 
 def uninstall
+
+	setup options[ :profile ]
 
 	begin
 
@@ -136,12 +120,28 @@ def test
 
 	require_relative 'test/run'
 
+	setup :testing
+
 	::Gitomate::TestSuite.run self
 
 end
 
 
 no_commands do
+
+	def setup( profile )
+
+		@config  = ::Gitomate::Config.new( profile )
+
+		@log     = ::Gitomate::Feedback.get( 'Thorfile' )
+
+		@binDirs  = @config.options( :install, :binDirs   )
+		@binDirs.is_a?( Array ) or @binDirs = [ @binDirs ]
+
+		@confDirs = @config.options( :install, :confDirs )
+		@confDirs.is_a?( Array ) or @confDirs = [ @confDirs ]
+
+	end
 
 end
 

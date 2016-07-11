@@ -5,9 +5,9 @@ class Sync
 
 include TidBits::Options::Configurable
 
-def initialize( config, default, userOpts = {} )
+def initialize( opts )
 
-	setupOptions( default, userOpts )
+	setupOptions( opts )
 
 	@config = config
 	@log   = Feedback.get( 'Sync  ', config )

@@ -15,7 +15,7 @@ attr_reader :path
 
 def initialize( path:, **opts )
 
-	super( Fact.config.options( :Facts, :PathExist ), opts, path: path )
+	super( opts, path: path )
 
 end
 
@@ -91,7 +91,7 @@ attr_reader :path, :args
 
 def initialize( path:, **opts )
 
-	super( Fact.config.options( :Facts, :Path ), opts, path: path )
+	super( opts, path: path )
 
 	dependOn( PathExist, { path: path }, type: options( :type ) )
 

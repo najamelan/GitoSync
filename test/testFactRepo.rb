@@ -5,6 +5,9 @@ module Gitomate
 
 class TestFactRepo < Test::Unit::TestCase
 
+include TidBits::Options::Configurable
+
+
 RFact   = Facts::Git::Repo
 @@help  = TestHelper.new
 @@brute = TestAFact.new( RFact )
@@ -19,7 +22,7 @@ RFact   = Facts::Git::Repo
 
 def self.startup
 
-	Facts::Fact.config = @@help.config
+
 
 end
 
@@ -127,6 +130,31 @@ def test_03head
 	end
 
 end
+
+
+
+# def test_04remotes
+
+# 	@@help.repo( 'test_04remotes' ) do |path, name, out|
+
+# 		name, url, rOut = @@help.addRemote path
+
+# 		@@brute.check(
+
+# 			{ path: path },
+
+# 			{
+# 				clean: true,
+# 				head: 'master',
+# 				remotes: [ { name: name, url: url } ]
+# 			},
+
+# 			out + rOut
+# 		)
+
+# 	end
+
+# end
 
 end # class TestFactRepo
 end # module Gitomate

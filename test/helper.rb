@@ -5,7 +5,7 @@ module Gitomate
 class TestHelper
 
 
-attr_reader :host, :prfx, :sshUser, :user, :config, :quiet
+attr_reader :host, :prfx, :sshUser, :user, :quiet
 
 
 def initialize
@@ -14,7 +14,7 @@ def initialize
 	@prfx    = 'gitomate/test/'
 	@sshUser = 'gitomate'
 	@user    = 'gitomate'
-	@config  = Config.get 'testing'
+	# @config  = Config.get 'testing'
 	@quiet   = true
 
 	@cleanRepoSrc = File.expand_path( 'data/fixtures/clean', File.dirname( __FILE__ ) )
@@ -166,6 +166,32 @@ def addSubmodule( path, src )
 	return subPath, out
 
 end
+
+
+
+def addRemote( path, name = 'origin', url = false )
+
+	Dir.chdir path
+
+	remoteName   = @prfx + randomString
+	url        ||= "#{@host}:#{remoteName}"
+
+	out          = []
+
+	out += cmd     "git remote add -m master #{name} #{url}"
+	out += gitoCmd "create #{remoteName}"
+
+	return name, url, out
+
+end
+
+
+
+def track( path, branch, startpoint )
+
+	out = []
+
+	out += cmd "git branch --set-upstream #{startpoint} #{branch}"
 
 	out
 

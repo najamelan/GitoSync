@@ -16,11 +16,11 @@ attr_reader :repo, :path
 
 def initialize( path:, **opts )
 
-	super( Fact.config.options( :Facts, :Git, :RepoExist ), opts, path: path )
+	super( opts, path: path )
 
 	dependOn( Path, { path: path }, type: 'directory' )
 
-	@repo = ::Gitomate::Repo.new( Fact.config, path: path )
+	@repo = Gitomate::Git::Repo.new( path: path )
 
 end
 
@@ -75,9 +75,10 @@ end # class  RepoExist
 
 # Options (* means mandatory)
 #
-# path* : Path to the repository directory (workingDir with .git)
-# head  : string  (the ref name head should point to, eg. a branch name)
-# clean : bool    (whether the working dir is clean)
+# path*  : Path to the repository directory (workingDir with .git)
+# head   : String      (the ref name head should point to, eg. a branch name)
+# clean  : Boolean     (whether the working dir is clean)
+# remotes: Array<Hash> A list of settings for Fact::Git::Remote to depend on.
 #
 # TODO: currently we won't check anything if the exist option doesn't correspond with reality.
 #       However, we don't do input validation to keep people from asking us to test properties on a
@@ -91,13 +92,15 @@ attr_reader :repo
 
 
 
-def initialize( path:, **opts )
+def initialize( path:, remotes: [], **opts )
 
-	super( Fact.config.options( :Facts, :Git, :Repo ), opts, path: path )
+	super( opts, path: path, remotes: remotes )
 
-	@repo = ::Gitomate::Repo.new( Fact.config, path: @path )
+	@repo   = Gitomate::Git::Repo.new( path: path )
 
 	dependOn( RepoExist, { path: path } )
+
+	remotes.each { |remote| ap remote; dependOn( Remote, remote.merge( path: path ) ) }
 
 end
 
@@ -108,7 +111,7 @@ def analyze( update = false )
 	super == 'return'  and  return @analyzePassed
 
 
-	@state[ :head  ]  and  @state[ :head  ][ :found ] = @repo.branch
+	@state[ :head  ]  and  @state[ :head  ][ :found ] = @repo.head
 	@state[ :clean ]  and  @state[ :clean ][ :found ] = @repo.workingDirClean?
 
 	@analyzePassed

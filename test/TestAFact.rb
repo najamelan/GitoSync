@@ -1,5 +1,3 @@
-require_relative 'helper'
-
 
 module Gitomate
 
@@ -8,13 +6,10 @@ class TestAFact
 
 include TidBits::Options::Configurable
 
-@@help  = TestHelper.new
-Facts::Fact.config = @@help.config
-
 # The basic properties we are testing. This tells us this is not a test to be checked.
 # eg. a file system path against which we test. Can be an array or an individual element.
 #
-attr_reader :type
+attr_reader   :type
 attr_accessor :client
 
 
@@ -22,7 +17,7 @@ def initialize( type, **opts )
 
 	@type   = type
 
-	setupOptions( Facts::Fact.config.options( :Fact, :TestAFact ), opts )
+	setupOptions( opts )
 
 end
 
@@ -64,8 +59,13 @@ end
 #
 def check( baseProps, state, msg, failures = {} )
 
+
+	# Make all possible combinations of the options we can send in.
+	# Different options should be independent.
+	#
 	keys         = state.keys
 	combinations = ( 0..keys.size ).flat_map{ |size| keys.combination( size ).to_a }
+
 
 	combinations.each do |combo|
 
@@ -78,6 +78,7 @@ def check( baseProps, state, msg, failures = {} )
 		end
 
 		debug = "#{msg.ai}\nCalled #{@type.ai} with: #{query.merge( baseProps ).ai}"
+
 		fact  = @type.new( query.merge baseProps )
 		fact.check
 

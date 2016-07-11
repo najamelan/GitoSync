@@ -55,7 +55,7 @@ default:
     confDirs: /etc/gitomate.d
 
 
-  feedback:
+  Feedback:
 
     logFile : gitomate.log
     logDir  : /var/log/gitomate
@@ -92,45 +92,47 @@ default:
   # These are defaults for every repository. In the repos section, if you ommit these keys, these defaults
   # will be used. You can override these defaults in conf.d
   #
-  repo:
+  Git:
 
-    branch   : master
-    track    : master
-    gituser  : gitcontent
+    Repo:
 
-    # This is the name for the remote
-    #
-    remote   : gitolite
+      branch   : master
+      track    : master
+      gituser  : gitcontent
 
-    # This is a placeholder, just to say that if you don't specify a remoteUrl, this will be the defaults
-    # %name% stands for the last part of the path, note that path does not have a default.
-    #
-    remoteUrl: '%gituser%@localhost:%name%'
-
-    pathOwner: gitcontent
-    pathGroup: php
-
-    # Owner overrides
-    #
-    # owner:
+      # This is the name for the remote
       #
-      # '.gitignore' : gitcontent:gitcontent
+      remote   : gitolite
 
-    # The default permissions
-    #
-    pathDirPerms: 0755
-    pathFilePerms: 644
+      # This is a placeholder, just to say that if you don't specify a remoteUrl, this will be the defaults
+      # %name% stands for the last part of the path, note that path does not have a default.
+      #
+      remoteUrl: '%gituser%@localhost:%name%'
 
-    # Permission overrides
-    #
-    # perm:
+      pathOwner: gitcontent
+      pathGroup: php
+
+      # Owner overrides
       #
-      # '.gitignore'         : 600 # eg. www-data has no business with these files
-      # '**readme.txt'       : 600
+      # owner:
+        #
+        # '.gitignore' : gitcontent:gitcontent
+
+      # The default permissions
       #
-      # neither php or apache need listings, but php needs to put uploaded files and apache needs to serve them
+      pathDirPerms: 0755
+      pathFilePerms: 644
+
+      # Permission overrides
       #
-      # 'wp-content/uploads/': 731
+      # perm:
+        #
+        # '.gitignore'         : 600 # eg. www-data has no business with these files
+        # '**readme.txt'       : 600
+        #
+        # neither php or apache need listings, but php needs to put uploaded files and apache needs to serve them
+        #
+        # 'wp-content/uploads/': 731
 
 
   # The list of repositories that gitomate manages. Must be an array. Defaults to an empty array.
@@ -154,11 +156,6 @@ default:
     Fact:
 
       quiet: false
-
-    TestAFact:
-
-      inverseBool : true
-      mangleString: true
 
 
     PathExist:

@@ -6,6 +6,7 @@ require 'rugged'
 require 'byebug'
 require 'English'
 require 'etc'
+require 'pry'
 
 require 'active_support'
 require 'active_support/core_ext/object/try'
