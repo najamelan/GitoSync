@@ -75,6 +75,7 @@ def setArgs args
 end
 
 
+
 def requireDepends
 
 	@mustDepend.each do |depend|
@@ -187,7 +188,12 @@ def checkDepends( update = false )
 
 		update || !dep.checked  and  dep.check( update )
 
-		dep.checkPassed or return false
+		if ! dep.checkPassed
+
+			warn "#{self.class.name}: Dependency #{dep.class.name} #{dep.args.ai} failed."
+			return false
+
+		end
 
 	end
 
