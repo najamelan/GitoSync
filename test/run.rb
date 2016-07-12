@@ -8,7 +8,7 @@ require_relative '../lib/gitomate'
 defined?( Test::Unit::AutoRunner ) and Test::Unit::AutoRunner.need_auto_run = false
 
 
-Dir[ File.join( File.dirname( __FILE__ ), '*.rb' ) ].each do | file |
+Dir[ File.join( File.dirname( __FILE__ ), '**/*.rb' ) ].each do | file |
 
 	require_relative file
 
@@ -25,8 +25,9 @@ def self.suite
 	suite =  Test::Unit::TestSuite.new( "Gitomate Unit Tests" )
 
 	# suite << TestThorfile.suite
-	suite << TestGitolite.suite
+	suite << Git::TestBranch.suite
 	suite << TestTestHelper.suite
+	suite << TestGitolite.suite
 	suite << TestFactRepo.suite
 
 end

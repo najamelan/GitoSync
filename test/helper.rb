@@ -173,13 +173,15 @@ def addRemote( path, name = 'origin', url = false )
 
 	Dir.chdir path
 
+	branch       = 'master'
 	remoteName   = @prfx + randomString
 	url        ||= "#{@host}:#{remoteName}"
 
 	out          = []
 
-	out += cmd     "git remote add -m master #{name} #{url}"
 	out += gitoCmd "create #{remoteName}"
+	out += cmd     "git remote add #{name} #{url}"
+	out += cmd     "git push --set-upstream #{name} #{branch}"
 
 	return name, url, out
 
@@ -191,7 +193,7 @@ def track( path, branch, startpoint )
 
 	out = []
 
-	out += cmd "git branch --set-upstream #{startpoint} #{branch}"
+	out += cmd "git branch --set-upstream #{branch} #{startpoint}"
 
 	out
 
@@ -199,15 +201,59 @@ end
 
 
 
-def pollute( path )
+def pollute path
 
 	out = []
 
-	Dir.chdir path
-	out += cmd "touch bfile"
-	out += cmd "git add bfile"
+	file = randomString
 
-	out
+	Dir.chdir path
+	out += cmd "touch #{file}"
+	out += cmd "git add #{file}"
+
+	return file, out
+
+end
+
+
+
+def commitOne path
+
+	file, out = pollute path
+
+	out += cmd "git commit -am'commit #{file}'"
+
+	return file, out
+
+end
+
+
+
+def clone path
+
+	tmp  = tmpDir
+	name = randomString
+	out  = []
+
+	Dir.chdir tmp
+
+	out += cmd "git clone #{path} #{name}"
+
+	return "#{tmp}/#{name}", out
+
+end
+
+
+
+def push path, remote = 'origin', branch = 'master'
+
+	out  = []
+
+	Dir.chdir path
+
+	out += cmd "git push --set-upstream #{remote} #{branch}"
+
+	return out
 
 end
 

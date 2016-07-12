@@ -7,16 +7,19 @@ class  Remote
 
 include TidBits::Options::Configurable
 
+attr_reader :name, :url
 
 def initialize( rug, git, **opts )
 
 	setupOptions( opts )
 
-	@log = Feedback.get( self.class.name )
+	@log  = Feedback.get( self.class.name )
 
-	@git = git
-	@rug = rug
-	@url = @rug.url
+	@git  = git
+	@rug  = rug
+	@url  = @rug.url
+	@name = @rug.name
+
 
 end
 

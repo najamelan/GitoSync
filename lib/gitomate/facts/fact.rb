@@ -66,7 +66,7 @@ def setArgs args
 
 		self.instance_variable_set "@#{key}", value
 
-		self.singleton_class.instance_eval { attr_accessor key }
+		self.class.class_eval { attr_accessor key }
 
 	end
 

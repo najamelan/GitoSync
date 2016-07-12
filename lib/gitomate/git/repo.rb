@@ -15,14 +15,18 @@ attr_reader :path
 #
 attr_reader :remotes
 
+# An array of Gitomate::Branch objects for the repository.
+#
+attr_reader :branches
 
-def initialize( **opts )
+
+def initialize( path, **opts )
 
 	setupOptions( opts )
 
-	@path     = options( :path )
+	@path     = path
 	@remotes  = {}
-	@branches = []
+	@branches = {}
 
 	# Create a backend if the repo path exist and is a repo
 	#
@@ -37,10 +41,16 @@ def initialize( **opts )
 
 		end
 
+		@rug.branches.each do |branch|
+
+			@branches[ branch.name ] = ::Gitomate::Git::Branch.new( branch, @rug, @git )
+
+		end
+
 
 	rescue Rugged::RepositoryError, Rugged::OSError
 
-		@rug = @git = @remotes = @remote = nil
+		@rug = @git = @remotes = @branches = nil
 
 	end
 

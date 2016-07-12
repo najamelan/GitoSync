@@ -73,7 +73,8 @@ def setupDefaults profile
 	# Sync                    .defaults = options( :Sync                )
 
 	Git::Repo               .defaults = options( :Git  , :Repo        )
-	# Git::Remote             .defaults = options( :Git  , :Remote      )
+	Git::Remote             .defaults = options( :Git  , :Remote      )
+	Git::Branch             .defaults = options( :Git  , :Branch      )
 
 	Facts::Fact             .defaults = options( :Facts, :Fact        )
 	Facts::PathExist        .defaults = options( :Facts, :PathExist   )
@@ -83,8 +84,8 @@ def setupDefaults profile
 	Facts::Git::Repo        .defaults = options( :Facts, :Git, :Repo        )
 	Facts::Git::RemoteExist .defaults = options( :Facts, :Git, :RemoteExist )
 	Facts::Git::Remote      .defaults = options( :Facts, :Git, :Remote      )
-	# Facts::Git::BranchExist .defaults = options( :Facts, :Git, :BranchExist )
-	# Facts::Git::Branch      .defaults = options( :Facts, :Git, :Branch      )
+	Facts::Git::BranchExist .defaults = options( :Facts, :Git, :BranchExist )
+	Facts::Git::Branch      .defaults = options( :Facts, :Git, :Branch      )
 
 	profile == :testing or return
 
@@ -93,6 +94,8 @@ def setupDefaults profile
 	TestGitolite   .defaults = options( :TestGitolite   )
 	TestTestHelper .defaults = options( :TestTestHelper )
 	TestThorfile   .defaults = options( :TestThorfile   )
+
+	Git::TestBranch.defaults = options( :Git, :TestBranch )
 
 end
 

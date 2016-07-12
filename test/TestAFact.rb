@@ -80,13 +80,21 @@ def check( baseProps, state, msg, failures = {} )
 		debug = "#{msg.ai}\nCalled #{@type.ai} with: #{query.merge( baseProps ).ai}"
 
 		fact  = @type.new( query.merge baseProps )
+
+
+		baseProps.each do |key, prop|
+
+			@client.assert_respond_to fact, key.to_sym
+
+		end
+
 		fact.check
 
-		@client.assert( fact.analyzed     , debug )
-		@client.assert( fact.analyzePassed, debug )
+		@client.assert( fact.analyzed     , debug + "\n#{fact.class.name.ai}" )
+		@client.assert( fact.analyzePassed, debug + "\n#{fact.class.name.ai}" )
 
-		@client.assert( fact.checked      , debug )
-		@client.assert( fact.checkPassed  , debug )
+		@client.assert( fact.checked      , debug + "\n#{fact.class.name.ai}" )
+		@client.assert( fact.checkPassed  , debug + "\n#{fact.class.name.ai}" )
 
 		query.each do |key, value|
 

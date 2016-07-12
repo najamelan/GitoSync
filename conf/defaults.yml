@@ -134,6 +134,9 @@ default:
         #
         # 'wp-content/uploads/': 731
 
+    Branch: {}
+    Remote: {}
+
 
   # The list of repositories that gitomate manages. Must be an array. Defaults to an empty array.
   #
@@ -183,9 +186,7 @@ default:
         exist: true
 
 
-      Remote:
-
-        name: origin
+      Remote: {}
 
 
       BranchExist:
@@ -193,9 +194,7 @@ default:
         exist: true
 
 
-      Branch:
-
-        name: master
+      Branch: {}
 
 
 

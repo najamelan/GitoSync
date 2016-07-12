@@ -79,9 +79,9 @@ def test_01workingDir
 
 	@@help.repo( 'test_01workingDir' ) do |path, name, out|
 
-		@@help.pollute path
+		file, pOut = @@help.pollute path
 
-		@@brute.check( { path: path }, { clean: false, head: 'master' }, out )
+		@@brute.check( { path: path }, { clean: false, head: 'master' }, out + pOut )
 
 	end
 
@@ -100,14 +100,14 @@ def test_02workingDirSubs
 
 			# Pollute submodule
 			#
-			@@help.pollute subPath
+			file, pOut = @@help.pollute subPath
 
-			@@brute.check( { path: pathS }, { clean: false, head: 'master' }, outS + out + subOut )
+			@@brute.check( { path: pathS }, { clean: false, head: 'master' }, outS + out + subOut + pOut )
 
 
 			# Test the submodule
 			#
-			@@brute.check( { path: subPath }, { clean: false, head: 'master' }, outS + out + subOut )
+			@@brute.check( { path: subPath }, { clean: false, head: 'master' }, outS + out + subOut + pOut )
 
 		end
 
@@ -133,28 +133,36 @@ end
 
 
 
-# def test_04remotes
+def test_04remotes
 
-# 	@@help.repo( 'test_04remotes' ) do |path, name, out|
+	@@help.repo( 'test_04remotes' ) do |path, name, out|
 
-# 		name, url, rOut = @@help.addRemote path
+		remote, url, rOut = @@help.addRemote path
 
-# 		@@brute.check(
+		branch = 'master'
+		track  = "#{remote}/#{branch}"
 
-# 			{ path: path },
+		# rOut += @@help.track path, branch, track
 
-# 			{
-# 				clean: true,
-# 				head: 'master',
-# 				remotes: [ { name: name, url: url } ]
-# 			},
+		@@brute.check(
 
-# 			out + rOut
-# 		)
+			{
+				path: path,
+				remotes:  [ { name: remote, url: url } ],
+				branches: [ { name: branch, track: track, ahead?: false, behind?: false, diverged?: false } ]
+			},
 
-# 	end
+			{
+				clean:    true,
+				head:     'master',
+			},
 
-# end
+			out + rOut
+		)
+
+	end
+
+end
 
 end # class TestFactRepo
 end # module Gitomate

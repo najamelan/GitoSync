@@ -14,13 +14,13 @@ attr_reader :repo
 
 
 
-def initialize( path:, name:, **opts )
+def initialize( path:, name: 'origin', **opts )
 
 	super( opts, path: path, name: name )
 
 	dependOn( RepoExist, { path: path } )
 
-	@repo    = Gitomate::Git::Repo.new( path: path )
+	@repo    = Gitomate::Git::Repo.new( path )
 	@remotes = @repo.remotes
 
 end
@@ -76,12 +76,9 @@ end # class  RemoteExist
 
 # Options (* means mandatory)
 #
-# path*    : Path to the repository directory (workingDir with .git)
-# name*    : string  (default=origin)
-# url      : bool    (whether the working dir is clean)
-# ahead    : bool    (will check for current branch)
-# behind   : bool    (will check for current branch)
-# diverged : bool    (will check for current branch)
+# path* : Path to the repository directory (workingDir with .git)
+# name  : string  (default=origin)
+# url   : bool    (whether the working dir is clean)
 #
 class Remote < Facts::Fact
 
@@ -89,13 +86,13 @@ attr_reader :repo
 
 
 
-def initialize( path:, name:, merge: false, **opts )
+def initialize( path:, name: 'origin', **opts )
 
-	super( opts, path: path, name: name, merge: merge )
+	super( opts, path: path, name: name )
 
 	dependOn( RemoteExist, { path: path, name: name } )
 
-	@repo   = Gitomate::Git::Repo.new( path: path )
+	@repo   = Gitomate::Git::Repo.new( path )
 	@remote = @repo.remotes[ name ]
 
 end
@@ -106,11 +103,7 @@ def analyze( update = false )
 
 	super == 'return'  and  return @analyzePassed
 
-
-	@state[ :url      ]  and  @state[ :url      ][ :found ] = @remote.url
-	@state[ :ahead    ]  and  @state[ :ahead    ][ :found ] = @remote.ahead?
-	@state[ :behind   ]  and  @state[ :behind   ][ :found ] = @remote.behind?
-	@state[ :diverged ]  and  @state[ :diverged ][ :found ] = @remote.diverged?
+	@state[ :url ]  and  @state[ :url ][ :found ] = @remote.url
 
 	@analyzePassed
 
@@ -140,21 +133,6 @@ def check( update = false )
 			when :url
 
 				warn "Remote #{@name.ai} of repo #{@path.ai} should have url #{expect( key )}, but has #{@state[ key ][ :found ].ai}."
-
-			when :ahead
-
-				expect( key ) and warn "#{@path.ai} should be ahead of remote #{@name.ai}."
-				expect( key ) or  warn "#{@path.ai} should not be ahead of remote #{@name.ai}."
-
-			when :behind
-
-				expect( key ) and warn "#{@path.ai} should be behind of remote #{@name.ai}."
-				expect( key ) or  warn "#{@path.ai} should not be behind of remote #{@name.ai}."
-
-			when :diverged
-
-				expect( key ) and warn "#{@path.ai} should be diverged of remote #{@name.ai}."
-				expect( key ) or  warn "#{@path.ai} should not be diverged of remote #{@name.ai}."
 
 			end
 

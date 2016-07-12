@@ -12,3 +12,7 @@ testing:
   TestGitolite  : {}
   TestTestHelper: {}
   TestThorfile  : {}
+
+  Git:
+
+    TestBranch: {}
