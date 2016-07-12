@@ -29,6 +29,7 @@ def self.suite
 	suite << TestTestHelper.suite
 	suite << TestGitolite.suite
 	suite << TestFactRepo.suite
+	suite << TestFactPathExist.suite
 
 end
 

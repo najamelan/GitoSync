@@ -1,6 +1,7 @@
 testing:
 
   TestFactRepo  : {}
+  TestFactPathExist: {}
 
 
   TestAFact:

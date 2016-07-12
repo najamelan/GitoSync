@@ -6,6 +6,7 @@ module Facts
 # Options (* means mandatory)
 #
 # path* : Path to the repository directory (workingDir with .git)
+# create: if a path needs to be created, whether it should be a :file or a :directory
 # exist : bool   (default=true)
 #
 class PathExist < Facts::Fact
@@ -13,11 +14,13 @@ class PathExist < Facts::Fact
 attr_reader :path
 
 
-def initialize( path:, **opts )
 
-	super( opts, path: path )
+def initialize( path:, create: :file, **opts )
+
+	super( opts, path: path, create: create )
 
 end
+
 
 
 def analyze( update = false )
@@ -54,11 +57,51 @@ end
 
 
 
-def fix()
+def fix( force: true )
 
 	super == 'return'  and  return @fixPassed
 
-	raise "Note implemented"
+	@state.each do |key, test|
+
+		case key
+
+
+		when :exist
+
+			passed( key ) and next
+
+			test[ :fixed ] = true
+
+
+			# TODO: catch exceptions and report
+			#
+			if expect( key )
+
+				@create == :file      and FileUtils.touch  @path
+				@create == :directory and FileUtils.mkpath @path
+
+
+			else
+
+				FileUtils.remove_entry_secure( path, force )
+
+			end
+
+		end
+
+	end
+
+	@fixPassed = check( true )
+
+
+	@state.each do |key, test|
+
+		_fixed( key ) and test[ :fixed ] = test[ :passed ]
+
+	end
+
+
+	@fixPassed
 
 end
 

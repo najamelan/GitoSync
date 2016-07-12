@@ -89,13 +89,14 @@ def setupDefaults profile
 
 	profile == :testing or return
 
-	TestFactRepo   .defaults = options( :TestFactRepo   )
-	TestAFact      .defaults = options( :TestAFact      )
-	TestGitolite   .defaults = options( :TestGitolite   )
-	TestTestHelper .defaults = options( :TestTestHelper )
-	TestThorfile   .defaults = options( :TestThorfile   )
+	TestFactRepo      .defaults = options( :TestFactRepo      )
+	TestFactPathExist .defaults = options( :TestFactPathExist )
+	TestAFact         .defaults = options( :TestAFact         )
+	TestGitolite      .defaults = options( :TestGitolite      )
+	TestTestHelper    .defaults = options( :TestTestHelper    )
+	TestThorfile      .defaults = options( :TestThorfile      )
 
-	Git::TestBranch.defaults = options( :Git, :TestBranch )
+	Git::TestBranch   .defaults = options( :Git, :TestBranch  )
 
 end
 

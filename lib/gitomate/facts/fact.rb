@@ -170,13 +170,18 @@ def fix( update = false )
 
 	# Dependencies fail or check fails, return failure
 	#
-	if !checkDepends( update )  ||  !@checkPassed
+	if !checkDepends( update )
 
 		@fixed     = true
 		@fixPassed = false
 		return       'return'
 
 	end
+
+	# Provisional
+	#
+	@fixPassed = true
+	@fixed     = true
 
 end
 
@@ -244,6 +249,14 @@ end
 def passed key
 
 	@state[ key ][ :passed ]
+
+end
+
+
+
+def _fixed key
+
+	@state[ key ][ :fixed ]
 
 end
 
