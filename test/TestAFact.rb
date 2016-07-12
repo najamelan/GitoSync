@@ -84,6 +84,9 @@ def check( baseProps, state, msg, failures = {} )
 
 		baseProps.each do |key, prop|
 
+			key == :quiet    and next
+			key == :dependOn and next
+
 			@client.assert_respond_to fact, key.to_sym
 
 		end

@@ -47,7 +47,9 @@ def reset
 	#
 	@options.each do | key, value |
 
-		key == :quiet and next
+		key == :quiet      and next
+		key == :dependOn   and next
+		key == :mustDepend and next
 
 		@state[ key ] = { expect: value }
 
