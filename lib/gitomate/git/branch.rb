@@ -38,7 +38,7 @@ end
 
 
 
-def divergence
+def diverged
 
 	@name     or return nil
 	@upstream   or return nil
@@ -54,9 +54,9 @@ end
 
 def ahead
 
-	divergence.is_a? Array or return nil
+	diverged.is_a? Array or return nil
 
-	divergence.first
+	diverged.first
 
 end
 
@@ -64,9 +64,9 @@ end
 
 def behind
 
-	divergence.is_a? Array or return nil
+	diverged.is_a? Array or return nil
 
-	divergence.last
+	diverged.last
 
 end
 

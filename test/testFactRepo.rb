@@ -164,5 +164,95 @@ def test_04remotes
 
 end
 
+
+
+def test_05diverged
+
+	@@help.repo( 'test_05diverged' ) do |path, remoteName, out|
+
+		remoteName, url, rOut = @@help.addRemote path
+
+		path2, clOut = @@help.clone url
+
+		file, cOut  = @@help.commitOne path2
+		file, cOut2 = @@help.commitOne path
+
+		pOut = @@help.push path2
+
+		branch = 'master'
+		track  = "#{remoteName}/#{branch}"
+
+		out += rOut + clOut + cOut + cOut2 + pOut
+
+		branchFact = Gitomate::Facts::Git::Branch.new(
+
+			path:       path    ,
+			name:       branch  ,
+			track:      track   ,
+			ahead?:     true    ,
+			behind?:    true    ,
+			diverged?:  true    ,
+			ahead:      1       ,
+			behind:     1       ,
+			diverged: [1, 1]
+
+		)
+
+		branchFact.check
+
+
+		assert( branchFact.analyzePassed  , out.ai )
+		assert( branchFact.checkPassed    , out.ai )
+
+
+
+		@@brute.check(
+
+			{
+				path:     path                                ,
+				remotes:  [ { name: remoteName, url: url } ]  ,
+				dependOn: branchFact
+
+			},
+
+			{
+				clean:    true     ,
+				head:     'master' ,
+			},
+
+			out
+		)
+
+		@@brute.check(
+
+			{
+				path: path2,
+				remotes:  [ { name: remoteName, url: url } ],
+
+				branches:
+				[{
+					name:       branch  ,
+					track:      track   ,
+					ahead?:     false   ,
+					behind?:    false   ,
+					diverged?:  false   ,
+					ahead:      0       ,
+					behind:     0       ,
+					diverged: [0, 0]
+				}]
+			},
+
+			{
+				clean:    true,
+				head:     'master',
+			},
+
+			out
+		)
+
+	end
+
+end
+
 end # class TestFactRepo
 end # module Gitomate

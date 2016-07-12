@@ -108,17 +108,23 @@ def analyze( update = false )
 
 	super == 'return'  and  return @analyzePassed
 
+	s = @state
 
-	@state[ :track ]  and  @state[ :track ][ :found ] = @branch.upstreamName
+
+	s[ :track ]  and  s[ :track ][ :found ] = @branch.upstreamName
 
 
-	if @state[ :track ][ :found ]
+	if s[ :track ][ :found ]
 
-		@state[ :ahead?    ]  and  @state[ :ahead?    ][ :found ] = @branch.ahead?
-		@state[ :behind?   ]  and  @state[ :behind?   ][ :found ] = @branch.behind?
-		@state[ :diverged? ]  and  @state[ :diverged? ][ :found ] = @branch.diverged?
+		s[ :ahead?    ]  and  s[ :ahead?    ][ :found ] = @branch.ahead?
+		s[ :behind?   ]  and  s[ :behind?   ][ :found ] = @branch.behind?
+		s[ :diverged? ]  and  s[ :diverged? ][ :found ] = @branch.diverged?
 
-	elsif @state[ :ahead? ] || @state[ :behind? ] || @state[ :diverged? ]
+		s[ :ahead     ]  and  s[ :ahead     ][ :found ] = @branch.ahead
+		s[ :behind    ]  and  s[ :behind    ][ :found ] = @branch.behind
+		s[ :diverged  ]  and  s[ :diverged  ][ :found ] = @branch.diverged
+
+	elsif s[ :ahead? ] || s[ :behind? ] || s[ :diverged? ] || s[ :ahead ] || s[ :behind ] || s[ :diverged ]
 
 		warn "#{@path.ai} branch #{@name} should have an upstream, but it's not tracking anything."
 		@analyzePassed = false
@@ -150,28 +156,42 @@ def check( update = false )
 			info[ :passed ] = false
 			@checkPassed    = false
 
+			track = @state[ :track ][ :found ].ai
+
 
 			case key
 
 			when :track
 
-				expect( key ) and warn "#{@path.ai} branch #{@name} should track upstream #{    expect( key ).ai} but found found( key )."
-				expect( key ) or  warn "#{@path.ai} branch #{@name} should not track upstream #{expect( key ).ai} but found found( key )."
+				expect( key ) and warn "#{@path.ai} branch #{@name} should track upstream #{expect( key ).ai} but found #{found(key)}."
+				expect( key ) or  warn "#{@path.ai} branch #{@name} should not track upstream #{expect( key ).ai} but found #{found(key)}."
 
 			when :ahead?
 
-				expect( key ) and warn "#{@path.ai} branch #{@name} should be ahead of #{    @state[ :track ][ :found ].ai}."
-				expect( key ) or  warn "#{@path.ai} branch #{@name} should not be ahead of #{@state[ :track ][ :found ].ai}."
+				expect( key ) and warn "#{@path.ai} branch #{@name} should be ahead of #{    track}."
+				expect( key ) or  warn "#{@path.ai} branch #{@name} should not be ahead of #{track}."
 
 			when :behind?
 
-				expect( key ) and warn "#{@path.ai} branch #{@name} should be behind of #{    @state[ :track ][ :found ].ai}."
-				expect( key ) or  warn "#{@path.ai} branch #{@name} should not be behind of #{@state[ :track ][ :found ].ai}."
+				expect( key ) and warn "#{@path.ai} branch #{@name} should be behind of #{    track}."
+				expect( key ) or  warn "#{@path.ai} branch #{@name} should not be behind of #{track}."
 
 			when :diverged?
 
-				expect( key ) and warn "#{@path.ai} branch #{@name} should be diverged of #{    @state[ :track ][ :found ].ai}."
-				expect( key ) or  warn "#{@path.ai} branch #{@name} should not be diverged of #{@state[ :track ][ :found ].ai}."
+				expect( key ) and warn "#{@path.ai} branch #{@name} should be diverged of #{    track}."
+				expect( key ) or  warn "#{@path.ai} branch #{@name} should not be diverged of #{track}."
+
+			when :ahead
+
+				warn "#{@path.ai} branch #{@name} should be #{key} of #{track} by #{expect(key)} but is #{found(key)}."
+
+			when :behind
+
+				warn "#{@path.ai} branch #{@name} should be #{key} of #{track} by #{expect(key)} but is #{found(key)}."
+
+			when :diverged
+
+				warn "#{@path.ai} branch #{@name} should be #{key} of #{track} by #{expect(key)} but is #{found(key)}."
 
 			end
 
