@@ -30,6 +30,7 @@ def self.suite
 	suite << TestGitolite.suite
 	suite << TestFactRepo.suite
 	suite << TestFactPathExist.suite
+	suite << TestFactPath      .suite
 
 end
 

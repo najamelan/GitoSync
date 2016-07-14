@@ -196,6 +196,11 @@ def check( update = false )
 			end
 
 
+		else
+
+			info[ :passed ] = true
+
+
 		end
 
 	end

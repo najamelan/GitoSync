@@ -156,7 +156,7 @@ def test_04CreateDir
 
 	path = "#{@@tmp}/test_04CreateDir"
 
-	f = RFact.new( path: path, create: :directory )
+	f = RFact.new( path: path, create: 'directory' )
 
 	assert( f.fix                        )
 	assert( f.fixed                      )
