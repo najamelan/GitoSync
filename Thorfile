@@ -135,10 +135,10 @@ no_commands do
 
 		@log     = ::Gitomate::Feedback.get( 'Thorfile' )
 
-		@binDirs  = @config.options( :install, :binDirs   )
+		@binDirs  = @config.options.install.binDirs
 		@binDirs.is_a?( Array ) or @binDirs = [ @binDirs ]
 
-		@confDirs = @config.options( :install, :confDirs )
+		@confDirs = @config.options.install.confDirs
 		@confDirs.is_a?( Array ) or @confDirs = [ @confDirs ]
 
 	end

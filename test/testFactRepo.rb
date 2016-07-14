@@ -9,8 +9,6 @@ include TidBits::Options::Configurable
 
 
 RFact   = Facts::Git::Repo
-@@help  = TestHelper.new
-@@brute = TestAFact.new( RFact )
 
 # Provide a tmp directory variable for the class. This should be created in
 # setup and removed in teardown. Give it a default path that is sure not to exist,
@@ -22,7 +20,8 @@ RFact   = Facts::Git::Repo
 
 def self.startup
 
-
+	@@help  = TestHelper.new
+	@@brute = TestAFact.new( RFact )
 
 end
 

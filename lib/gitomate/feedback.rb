@@ -63,7 +63,7 @@ def initialize( progname, **opts )
 
 	@loggers = []
 
-	options( :outputs ).each do | name, settings |
+	options.outputs.each do | name, settings |
 
 		settings[ :enabled ] || next
 
@@ -71,11 +71,11 @@ def initialize( progname, **opts )
 
 		when :file
 
-			d = Rush::Dir.new( options( :logDir ) )
+			d = Rush::Dir.new( options.logDir )
 			d.exists? || d.create
-			f = d[ options( :logFile ) ]
+			f = d[ options.logFile ]
 
-			l           = Logger.new( f.to_s, options( :keep ), options( :maxSize ) )
+			l           = Logger.new( f.to_s, options.keep, options.maxSize )
 			l.level     = Logger::Severity.const_get( settings[ :logLevel ] )
 			l.formatter = YamlLogFormat.new
 			l.progname  = progname

@@ -118,7 +118,7 @@ def check( update = false )
 
 	@state.each do | key, info |
 
-		@options.has_key?( key ) or next
+		options.has_key?( key ) or next
 
 		info[ :passed ] = true
 

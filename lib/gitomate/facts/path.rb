@@ -136,7 +136,7 @@ def initialize( path:, **opts )
 
 	super( opts, path: path )
 
-	dependOn( PathExist, { path: path, create: options( :type ) } )
+	dependOn( PathExist, { path: path, create: options.type } )
 
 end
 
@@ -174,7 +174,7 @@ def check( update = false )
 
 	@state.each do | key, info |
 
-		@options.has_key?( key ) or next
+		options.has_key?( key ) or next
 
 		if found( key ) != expect( key )
 

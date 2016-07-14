@@ -14,7 +14,7 @@ def initialize( opts )
 	@repos = []
 	@info  = { repos: {} }
 
-	options( :repos ).each do | repo |
+	options.repos.each do | repo |
 
 		# @log.debug "Creating repo object for repo: #{repo[ :path ]}"
 		# @repos << Repo.new( config, repo )
@@ -32,7 +32,7 @@ def sync( dryRun = true )
 
 	installGitolite
 
-	options( :gitusers ).each do |gitoUser|
+	options.gitusers.each do |gitoUser|
 
 		configGitoUser
 		installTrigger
@@ -40,7 +40,7 @@ def sync( dryRun = true )
 	end
 
 
-	options( :repos ).each do | repo |
+	options.repos.each do | repo |
 
 		# @repo = repo
 		# o     = repo.options
@@ -142,7 +142,7 @@ end
 
 def createPath
 
-	Fact::Path.new( repo.options( :path ), @config.defaults, { exist: true, type: directory } )
+	Fact::Path.new( repo.options.path, @config.defaults, { exist: true, type: directory } )
 
 	check                                                                \
                                                                         \
@@ -218,7 +218,7 @@ def connectRemote
 	                                                                     \
 	do
 
-		@log.fatal "We can't connect to #{@repo.options( :remoteUrl )}"
+		@log.fatal "We can't connect to #{@repo.options.remoteUrl}"
 		raise "This shouldn't happen"
 
 
@@ -241,7 +241,7 @@ def canWriteRemote
 	                                                                     \
 	do
 
-		@log.fatal "We can't write to #{@repo.options( :remoteUrl )}"
+		@log.fatal "We can't write to #{@repo.options.remoteUrl}"
 		raise "Fix your permissions in gitolite-admin"
 
 
@@ -259,7 +259,7 @@ def onRightBranch
                                                                         \
 		  @repo.onRightBranch?                                            \
 		, "#{@repo.paths} does not have the correct branch checked out."  \
-		, "Trying to check out #{@repo.options( :branch )}"               \
+		, "Trying to check out #{@repo.options.branch}"               \
                                                                         \
 	                                                                     \
 	do

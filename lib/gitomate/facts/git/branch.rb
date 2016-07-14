@@ -95,7 +95,7 @@ def initialize( path:, name:, **opts )
 
 	dependOn( BranchExist, { path: path, name: name } )
 
-	options( :track ) and dependOn( BranchExist, { path: path, name: options( :track ) } )
+	options.track and dependOn( BranchExist, { path: path, name: options.track } )
 
 	@repo   = Gitomate::Git::Repo.new( path )
 	@branch = @repo.branches[ name ]
@@ -147,7 +147,7 @@ def check( update = false )
 
 		# TODO:do we still need this check?
 		#
-		@options.has_key?( key ) or next
+		options.has_key?( key ) or next
 
 		info[ :passed ] = true
 

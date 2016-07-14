@@ -16,8 +16,8 @@ def initialize( opts, **args )
 
 	setupOptions( opts )
 
-	@mustDepend = *options( :mustDepend )
-	@depend     = *options( :dependOn   )
+	@mustDepend = *options.mustDepend
+	@depend     = *options.dependOn
 
 	@args       = args
 	@log        = Feedback.get self.class.name
@@ -45,7 +45,7 @@ def reset
 	# TODO: sometimes facts will want to get options that aren't actually test,
 	#       so we need a way to distinguish them...
 	#
-	@options.each do | key, value |
+	options.each do | key, value |
 
 		key == :quiet      and next
 		key == :dependOn   and next
@@ -271,7 +271,7 @@ def unknown( msg ) log( msg, lvl: :unknown ) end
 
 def log( msg, lvl: :warn )
 
-	options( :quiet ) or @log.send lvl, msg
+	options.quiet or @log.send lvl, msg
 
 end
 
