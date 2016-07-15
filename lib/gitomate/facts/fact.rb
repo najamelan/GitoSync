@@ -7,6 +7,23 @@ class Fact
 
 include TidBits::Options::Configurable
 
+@@factCounter = 0
+
+
+def self.reset
+
+	@@factCounter = 0
+
+end
+
+
+def self.count
+
+	@@factCounter
+
+end
+
+
 
 attr_reader :depend, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :state, :args
 
@@ -27,7 +44,10 @@ def initialize( opts, **args )
 
 	reset
 
+	@@factCounter += 1
+
 end
+
 
 
 def reset

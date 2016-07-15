@@ -32,6 +32,8 @@ def self.suite
 	suite << TestFactPathExist .suite
 	suite << TestFactPath      .suite
 
+	suite << TestFact          .suite
+
 end
 
 
