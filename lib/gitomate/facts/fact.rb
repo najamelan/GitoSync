@@ -234,17 +234,37 @@ end
 #
 def dependOn( klass, args, **opts )
 
-	if @depend.none? do |dep|
+	dependUseless?( klass, args, **opts )  or  @depend.push klass.new( **args, **opts )
 
-		   	klass     ==  dep             \
-		   && args      ==  dep.args        \
-			&& opts.subset?( dep.options )   \
+end
 
-		end
 
-		@depend.push klass.new( **args, **opts )
+
+# Check in our dependency chain if a dependency that does exaclty this has already been
+# depended on. This prevents useless creation of Facts that check the same things over
+# and over again.
+#
+def dependUseless?( klass, params, **opts )
+
+	result = false
+
+	@depend.any? { |dep| dep.dependUseless?( klass, params, **opts ) } and result = true
+
+
+	if                                       \
+		                                      \
+		   	klass        ==  self.class     \
+		   && params       ==  args           \
+			&& opts   .subset?( self.options ) \
+                                            \
+   then
+
+   	result = true
 
 	end
+
+
+	result
 
 end
 
