@@ -71,9 +71,9 @@ def initialize( progname, **opts )
 
 		when :file
 
-			d = Rush::Dir.new( options.logDir )
-			d.exists? || d.create
-			f = d[ options.logFile ]
+			d = options.logDir.path
+			d.exist? || d.mkpath
+			f = d.join options.logFile
 
 			l           = Logger.new( f.to_s, options.keep, options.maxSize )
 			l.level     = Logger::Severity.const_get( settings[ :logLevel ] )

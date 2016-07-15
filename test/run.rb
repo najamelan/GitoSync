@@ -25,11 +25,11 @@ def self.suite
 	suite =  Test::Unit::TestSuite.new( "Gitomate Unit Tests" )
 
 	# suite << TestThorfile.suite
-	suite << Git::TestBranch.suite
-	suite << TestTestHelper.suite
-	suite << TestGitolite.suite
-	suite << TestFactRepo.suite
-	suite << TestFactPathExist.suite
+	suite << Git::TestBranch   .suite
+	suite << TestTestHelper    .suite
+	suite << TestGitolite      .suite
+	suite << TestFactRepo      .suite
+	suite << TestFactPathExist .suite
 	suite << TestFactPath      .suite
 
 end

@@ -1,4 +1,5 @@
 require 'etc'
+require 'open3'
 
 module Gitomate
 

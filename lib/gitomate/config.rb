@@ -50,6 +50,7 @@ def setupDefaults profile
 
 	@cfg.setup( TestFactRepo      , :TestFactRepo      )
 	@cfg.setup( TestFactPathExist , :TestFactPathExist )
+	@cfg.setup( TestFactPath      , :TestFactPath      )
 	@cfg.setup( TestAFact         , :TestAFact         )
 	@cfg.setup( TestGitolite      , :TestGitolite      )
 	@cfg.setup( TestTestHelper    , :TestTestHelper    )
