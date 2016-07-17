@@ -159,6 +159,7 @@ defaults:
     Fact:
 
       quiet: false
+      metas: [ metas, quiet, dependOn, mustDepend, factPool ]
 
 
     PathExist:

@@ -1,5 +1,3 @@
-# quiet       : bool (default=false)
-
 module Gitomate
 module Facts
 
@@ -62,14 +60,10 @@ def reset
 
 	@state         = {}
 
-	# TODO: sometimes facts will want to get options that aren't actually test,
-	#       so we need a way to distinguish them...
-	#
-	options.each do | key, value |
 
-		key == :quiet      and next
-		key == :dependOn   and next
-		key == :mustDepend and next
+	# Only take actual tests
+	#
+	options.select { |opt| ! Fact.options.metas.include? opt.to_s }.each do | key, value |
 
 		@state[ key ] = { expect: value }
 
