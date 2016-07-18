@@ -25,7 +25,7 @@
 #
 include: /etc/gitomate.d
 
-defaults:
+default:
 
   # You can inherit from another profile. 'default' is the root profile. It will always be the first in the inheritance
   # chain and will inherit from nothing.

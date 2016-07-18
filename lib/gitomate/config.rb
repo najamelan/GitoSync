@@ -8,12 +8,9 @@ def initialize( profile, fromCmdLine = [], **opts )
 
 	@profile = profile.to_sym
 
-	@profile == :include and raise "FATAL: The profile cannot be called [include]. Include is the only reserved name."
-
-
 	# get options from <installDir>/conf into defaults
 	#
-	@cfg = TidBits::Options::ConfigProfile.new( @profile, '../../conf'.relpath, fromCmdLine )
+	@cfg = TidBits::Options::ConfigProfile.new( profile: @profile, default: '../../conf'.relpath, runtime: fromCmdLine )
 
 	@cfg.setup( self.class )
 	setupOptions opts
