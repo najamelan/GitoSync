@@ -22,6 +22,26 @@ def self.count
 end
 
 
+def self.class_configured cfgObj
+
+	# Yaml can't have symbols as rvalues
+	#
+	[
+
+		settings.default.params      ,
+	   settings.default.metas       ,
+	   settings.userset.params      ,
+	   settings.userset.metas       ,
+	   settings.runtime.params      ,
+	   settings.runtime.metas       ,
+	   options.params               ,
+	   options.metas
+
+	].each { |setting| setting and setting.map!( &:to_sym ) }
+
+end
+
+
 
 attr_reader :depend, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :state, :params
 
@@ -35,11 +55,6 @@ def initialize( **opts )
 	@depend     = Array.eat( options.dependOn   )
 
 	@log        = Feedback.get self.class.name
-
-	# Yaml can't have symbols as rvalues
-	#
-	options.params.map!( &:to_sym )
-	options.metas .map!( &:to_sym )
 
 	setParams
 	requireDepends
