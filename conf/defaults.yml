@@ -159,60 +159,60 @@ default:
     Fact:
 
       quiet: false
-      metas: [ metas, arguments, quiet, dependOn, mustDepend, factPool ]
+      metas: [ metas, params, quiet, dependOn, mustDepend, factPool ]
 
 
     PathExist:
 
-      arguments: [ path, create ]
-      create   : file
-      exist    : true
+      params: [ path, create ]
+      create: file
+      exist : true
 
 
     Path:
 
-      arguments: [ path ]
+      params: [ path ]
 
 
     Git:
 
       RepoExist:
 
-        arguments: [ path ]
-        exist    : true
+        params: [ path ]
+        exist : true
 
 
       Repo:
 
-        arguments: [ path, remotes, branches ]
-        remotes  : []
-        branches : []
+        params  : [ path, remotes, branches ]
+        remotes : []
+        branches: []
 
 
       RemoteExist:
 
-        arguments: [ path, name ]
-        exist    : true
-        name     : origin
+        params: [ path, name ]
+        exist : true
+        name  : origin
 
 
       Remote:
 
-        arguments: [ path, name ]
-        name     : origin
+        params: [ path, name ]
+        name  : origin
 
 
       BranchExist:
 
-        arguments: [ path, name ]
-        exist    : true
-        name     : master
+        params: [ path, name ]
+        exist : true
+        name  : master
 
 
       Branch:
 
-        arguments: [ path, name ]
-        name     : master
+        params: [ path, name ]
+        name  : master
 
 
 

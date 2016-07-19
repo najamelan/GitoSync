@@ -38,8 +38,8 @@ def initialize( **opts )
 
 	# Yaml can't have symbols as rvalues
 	#
-	options.arguments.map!( &:to_sym )
-	options.metas    .map!( &:to_sym )
+	options.params.map!( &:to_sym )
+	options.metas .map!( &:to_sym )
 
 	setParams
 	requireDepends
@@ -79,8 +79,8 @@ def createState( opts = options )
 	#
 	opts.
 
-		select { |opt| ! options.metas    .include? opt }.
-	   select { |opt| ! options.arguments.include? opt }.
+		select { |opt| ! options.metas .include? opt }.
+	   select { |opt| ! options.params.include? opt }.
 	   each do | key, value |
 
 			state[ key ] = { expect: value }
@@ -100,7 +100,7 @@ def setParams
 
 	@params = {}
 
-	options.arguments.each do |key|
+	options.params.each do |key|
 
 		@params[ key ] = options[ key ]
 		instance_variable_set "@#{key}", @params[ key ]
