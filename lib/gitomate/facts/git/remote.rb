@@ -14,9 +14,9 @@ attr_reader :repo
 
 
 
-def initialize( path:, name: 'origin', **opts )
+def initialize( path:, **opts )
 
-	super( opts, path: path, name: name )
+	super( **opts, path: path )
 
 	dependOn( RepoExist, { path: path } )
 
@@ -86,9 +86,9 @@ attr_reader :repo
 
 
 
-def initialize( path:, name: 'origin', **opts )
+def initialize( path:, **opts )
 
-	super( opts, path: path, name: name )
+	super( **opts, path: path )
 
 	dependOn( RemoteExist, { path: path, name: name } )
 

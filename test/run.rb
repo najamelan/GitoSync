@@ -1,6 +1,8 @@
 require 'test/unit/testsuite'
 require 'test/unit/ui/console/testrunner'
+
 require_relative '../lib/gitomate'
+require_relative '../ext/quietbacktrace/lib/quietbacktrace'
 
 
 # Turn off test unit's auto runner for those using the gem

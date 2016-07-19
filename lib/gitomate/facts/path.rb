@@ -11,13 +11,10 @@ module Facts
 #
 class PathExist < Facts::Fact
 
-attr_reader :path
 
+def initialize( path:, **opts )
 
-
-def initialize( path:, create: 'file', **opts )
-
-	super( opts, path: path, create: create )
+	super( **opts, path: path )
 
 end
 
@@ -128,13 +125,10 @@ end # class  PathExist
 #
 class Path < Facts::Fact
 
-attr_reader :path, :args
-
-
 
 def initialize( path:, **opts )
 
-	super( opts, path: path )
+	super( **opts, path: path )
 
 	dependOn( PathExist, { path: path, create: options.type } )
 

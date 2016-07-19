@@ -193,15 +193,15 @@ def test_05diverged
 			diverged?:  true    ,
 			ahead:      1       ,
 			behind:     1       ,
-			diverged: [1, 1]
+			diverged:   [1, 1]
 
 		)
 
 		branchFact.check
 
 
-		assert( branchFact.analyzePassed  , out.ai )
-		assert( branchFact.checkPassed    , out.ai )
+		assert( branchFact.analyzePassed, out.ai )
+		assert( branchFact.checkPassed  , out.ai )
 
 
 

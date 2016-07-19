@@ -23,21 +23,25 @@ end
 
 
 
-attr_reader :depend, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :state, :args
+attr_reader :depend, :analyzed, :checked, :fixed, :analyzePassed, :checkPassed, :fixPassed, :state, :params
 
 
 
-def initialize( opts, **args )
+def initialize( **opts )
 
 	setupOptions( opts )
 
 	@mustDepend = Array.eat( options.mustDepend )
 	@depend     = Array.eat( options.dependOn   )
 
-	@args       = args
 	@log        = Feedback.get self.class.name
 
-	setArgs args
+	# Yaml can't have symbols as rvalues
+	#
+	options.arguments.map!( &:to_sym )
+	options.metas    .map!( &:to_sym )
+
+	setParams
 	requireDepends
 
 	reset
@@ -73,9 +77,13 @@ def createState( opts = options )
 
 	# Only take actual tests
 	#
-	opts.select { |opt| ! Fact.options.metas.include? opt.to_s }.each do | key, value |
+	opts.
 
-		state[ key ] = { expect: value }
+		select { |opt| ! options.metas    .include? opt }.
+	   select { |opt| ! options.arguments.include? opt }.
+	   each do | key, value |
+
+			state[ key ] = { expect: value }
 
 	end
 
@@ -88,11 +96,14 @@ end
 protected
 
 
-def setArgs args
+def setParams
 
-	args.each do |key, value|
+	@params = {}
 
-		self.instance_variable_set "@#{key}", value
+	options.arguments.each do |key|
+
+		@params[ key ] = options[ key ]
+		instance_variable_set "@#{key}", @params[ key ]
 
 		self.class.class_eval { attr_accessor key }
 
@@ -221,7 +232,7 @@ def checkDepends( update = false )
 
 		if ! dep.checkPassed
 
-			warn "#{self.class.name}: Dependency #{dep.class.name} #{dep.args.ai} failed."
+			warn "#{self.class.name}: Dependency #{dep.class.name} #{dep.params.ai} failed."
 			return false
 
 		end
@@ -253,16 +264,17 @@ end
 # depended on. This prevents useless creation of Facts that check the same things over
 # and over again.
 #
-def dependUseless?( klass, params, **opts )
+def dependUseless?( klass, args, **opts )
 
-	found = @depend.find { |dep| dep.dependUseless?( klass, params, **opts ) } and return found
+	found = @depend.find { |dep| dep.dependUseless?( klass, args, **opts ) } and return found
 
+	otherState = createState( self.class.settings.default.deep_merge( self.class.settings.userset ).deep_merge( opts ) )
 
 	if                                                  \
 		                                                 \
 		   	klass        ==  self.class                \
-		   && params       ==  args                      \
-			&& createState( opts ).subset?( createState ) \
+		   && args         ==  params                    \
+			&& otherState.subset?( createState )          \
                                                        \
    then
 
@@ -281,8 +293,8 @@ def < other
 
 	self.class == other.class or return nil
 
-	   self.args == other.args                        \
-	&& self.createState.subset?( other.createState )
+	   params == other.params                        \
+	&& createState.subset?( other.createState )
 
 end
 
@@ -292,8 +304,8 @@ def > other
 
 	self.class == other.class or return nil
 
-	   self.args == other.args                        \
-	&& self.createState.superset?( other.createState )
+	   params == other.params                        \
+	&& createState.superset?( other.createState )
 
 end
 
@@ -303,8 +315,8 @@ def == other
 
 	self.class == other.class or return nil
 
-	   self.args        == other.args         \
-	&& self.createState == other.createState  \
+	   params        == other.params         \
+	&& createState   == other.createState
 
 end
 

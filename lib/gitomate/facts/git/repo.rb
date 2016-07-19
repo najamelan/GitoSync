@@ -11,12 +11,12 @@ module Git
 #
 class RepoExist < Facts::Fact
 
-attr_reader :repo, :path
+attr_reader :repo
 
 
 def initialize( path:, **opts )
 
-	super( opts, path: path )
+	super( **opts, path: path )
 
 	dependOn( Path, { path: path }, type: 'directory' )
 
@@ -93,9 +93,9 @@ attr_reader :repo
 
 
 
-def initialize( path:, remotes: [], branches: [], **opts )
+def initialize( path:, **opts )
 
-	super( opts, path: path, remotes: remotes, branches: branches )
+	super( **opts, path: path )
 
 	@repo   = Gitomate::Git::Repo.new( path )
 
