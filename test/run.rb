@@ -31,9 +31,9 @@ def self.suite
 	suite << Git::TestBranch   .suite
 
 	suite << TestFact          .suite
-	suite << TestFactRepo      .suite
 	suite << TestFactPathExist .suite
 	suite << TestFactPath      .suite
+	suite << TestFactRepo      .suite
 
 end
 

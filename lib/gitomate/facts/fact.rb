@@ -31,8 +31,8 @@ def initialize( opts, **args )
 
 	setupOptions( opts )
 
-	@mustDepend = *options.mustDepend
-	@depend     = *options.dependOn
+	@mustDepend = Array.eat( options.mustDepend )
+	@depend     = Array.eat( options.dependOn   )
 
 	@args       = args
 	@log        = Feedback.get self.class.name
@@ -58,22 +58,34 @@ def reset
 	@checkPassed   = false
 	@fixPassed     = false
 
-	@state         = {}
-
-
-	# Only take actual tests
-	#
-	options.select { |opt| ! Fact.options.metas.include? opt.to_s }.each do | key, value |
-
-		@state[ key ] = { expect: value }
-
-	end
+	@state         = createState
 
 end
 
 
-protected
 
+# create a state object from options, only setting expect
+# TODO: inherit options?
+#
+def createState( opts = options )
+
+	state = {}
+
+	# Only take actual tests
+	#
+	opts.select { |opt| ! Fact.options.metas.include? opt.to_s }.each do | key, value |
+
+		state[ key ] = { expect: value }
+
+	end
+
+	state
+
+end
+
+
+
+protected
 
 
 def setArgs args
@@ -228,7 +240,10 @@ end
 #
 def dependOn( klass, args, **opts )
 
-	dependUseless?( klass, args, **opts )  or  @depend.push klass.new( **args, **opts )
+	result = dependUseless?( klass, args, **opts )  and  return result
+
+
+	@depend.push klass.new( **args, **opts )
 
 end
 
@@ -240,25 +255,56 @@ end
 #
 def dependUseless?( klass, params, **opts )
 
-	result = false
-
-	@depend.any? { |dep| dep.dependUseless?( klass, params, **opts ) } and result = true
+	found = @depend.find { |dep| dep.dependUseless?( klass, params, **opts ) } and return found
 
 
-	if                                       \
-		                                      \
-		   	klass        ==  self.class     \
-		   && params       ==  args           \
-			&& opts   .subset?( self.options ) \
-                                            \
+	if                                                  \
+		                                                 \
+		   	klass        ==  self.class                \
+		   && params       ==  args                      \
+			&& createState( opts ).subset?( createState ) \
+                                                       \
    then
 
-   	result = true
+   	return self
 
 	end
 
 
-	result
+	false
+
+end
+
+
+
+def < other
+
+	self.class == other.class or return nil
+
+	   self.args == other.args                        \
+	&& self.createState.subset?( other.createState )
+
+end
+
+
+
+def > other
+
+	self.class == other.class or return nil
+
+	   self.args == other.args                        \
+	&& self.createState.superset?( other.createState )
+
+end
+
+
+
+def == other
+
+	self.class == other.class or return nil
+
+	   self.args        == other.args         \
+	&& self.createState == other.createState  \
 
 end
 
