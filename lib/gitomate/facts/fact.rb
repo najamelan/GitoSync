@@ -51,14 +51,6 @@ def initialize( **opts )
 
 	setupOptions( opts )
 
-	@mustDepend = Array.eat( options.mustDepend )
-	@depend     = Array.eat( options.dependOn   )
-
-	@log        = Feedback.get self.class.name
-
-	setParams
-	requireDepends
-
 	reset
 
 	@@factCounter += 1
@@ -77,14 +69,22 @@ def reset
 	@checkPassed   = false
 	@fixPassed     = false
 
+	@mustDepend    = Array.eat( options.mustDepend )
+	@depend        = Array.eat( options.dependOn   )
+	@metas         = Array.eat( options.metas      )
+
+	@log           = Feedback.get self.class.name
+
+	@params        = createParams
 	@state         = createState
+
+	requireDepends
 
 end
 
 
 
 # create a state object from options, only setting expect
-# TODO: inherit options?
 #
 def createState( opts = options )
 
@@ -111,18 +111,20 @@ end
 protected
 
 
-def setParams
+def createParams
 
-	@params = {}
+	params = {}
 
 	options.params.each do |key|
 
-		@params[ key ] = options[ key ]
-		instance_variable_set "@#{key}", @params[ key ]
+		params[ key ] = options[ key ]
+		instance_variable_set "@#{key}", params[ key ]
 
 		self.class.class_eval { attr_accessor key }
 
 	end
+
+	params
 
 end
 
