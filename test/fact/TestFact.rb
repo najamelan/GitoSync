@@ -32,28 +32,26 @@ end
 
 def setup
 
-	Facts::Fact.reset
+	@@count = Facts::Fact.count
 
 end
 
 
 def teardown
 
-	FileUtils.remove_entry_secure @@tmp
+	@@tmp and @@tmp.exist? and @@tmp.rm_secure
 
 end
 
 
 def test_00FactCounter
 
-	@@tmp = @@help.tmpDir
-
-	assert_equal( 0, Facts::Fact      .count )
+	assert_equal( 0, Facts::Fact      .count - @@count )
 	assert_equal( 0, Facts::PathExist .count )
 
-	Facts::PathExist.new( path: @@tmp )
+	Facts::PathExist.new( path: '/tmp' )
 
-	assert_equal( 1, Facts::Fact      .count )
+	assert_equal( 1, Facts::Fact      .count - @@count )
 	assert_equal( 1, Facts::PathExist .count )
 
 end
@@ -62,21 +60,83 @@ end
 
 # Make sure we don't create unnecessary dependencies.
 #
-def test_00NoDoubleDepends
+def test_01NoDoubleDepends
 
-	@@tmp = @@help.tmpDir
+	one   = Facts::Path.new( path: '/tmp', type: 'directory' )
+	assert_equal( 2, Facts::Fact.count - @@count )
 
-	one   = Facts::Path.new( path: @@tmp, type: 'directory' )
-	assert_equal( 2, Facts::Fact.count )
+	two   = Facts::Path.new( path: '/tmp', type: 'directory', dependOn: one )
+	assert_equal( 3, Facts::Fact.count - @@count )
 
-	two   = Facts::Path.new( path: @@tmp, type: 'directory', dependOn: one )
-	assert_equal( 3, Facts::Fact.count )
+	three = Facts::Path.new( path: '/tmp', type: 'directory', dependOn: two )
+	assert_equal( 4, Facts::Fact.count - @@count )
 
-	three = Facts::Path.new( path: @@tmp, type: 'directory', dependOn: two )
-	assert_equal( 4, Facts::Fact.count )
+	four = Facts::Path.new( path: '/tmp', type: 'directory' )
+	assert_equal( 6, Facts::Fact.count - @@count )
 
-	four = Facts::Path.new( path: @@tmp, type: 'directory' )
-	assert_equal( 6, Facts::Fact.count )
+end
+
+
+
+# Make sure we don't create unnecessary dependencies.
+#
+def test_02FactPool
+
+	one   = Facts::Path.new( path: '/tmp', type: 'directory' )
+	assert_equal( 2, Facts::Fact.count - @@count )
+
+	two   = Facts::Path.new( path: '/tmp', type: 'directory', factPool: one )
+	assert_equal( 3, Facts::Fact.count - @@count )
+
+end
+
+
+
+# Make sure we don't create unnecessary dependencies.
+#
+def test_03Combine
+
+	@@help.repo( 'test_00repo' ) do |path, name, out|
+
+		one   = Facts::Git::Repo.new( path: path, remotes: [{ name: 'origin', url: '/tmpremote' }] )
+		# assert_equal( 5, Facts::Fact.count - @@count )
+
+		depends = one.depend
+		msg     = depends.map { |dep| { klass: dep.class, param: dep.params }  }
+
+		assert_equal( 2, depends.count, msg.ai )
+
+
+		repoExist = depends[ 0 ]
+		msg = repoExist.depend.map { |dep| { klass: dep.class, param: dep.params }  }
+
+		assert_equal( 1, repoExist.depend.count, msg.ai )
+		assert_instance_of( Facts::Git::RepoExist, repoExist, msg.ai )
+
+
+		remote = depends[ 1 ]
+		msg = remote.depend.map { |dep| { klass: dep.class, param: dep.params }  }
+
+		assert_equal( 1, remote.depend.count, msg.ai )
+		assert_instance_of( Facts::Git::Remote, remote, msg.ai )
+
+
+		remoteExist = remote.depend[ 0 ]
+		msg = remoteExist.depend.map { |dep| { klass: dep.class, param: dep.params }  }
+
+		assert_equal( 1, remoteExist.depend.count, msg.ai )
+		assert_instance_of( Facts::Git::RemoteExist, remoteExist, msg.ai )
+
+
+		repoExist2 = remoteExist.depend[ 0 ]
+		msg = repoExist2.depend.map { |dep| { klass: dep.class, param: dep.params.keys }  }
+
+		assert_equal( 1, repoExist2.depend.count, msg.ai )
+		assert_instance_of( Facts::Git::RepoExist, repoExist2, msg.ai )
+
+		assert_equal( repoExist.object_id, remoteExist.depend[ 0 ].object_id, msg.ai )
+
+	end
 
 end
 

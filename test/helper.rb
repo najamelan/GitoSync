@@ -15,7 +15,6 @@ def initialize
 	@prfx    = 'gitomate/test/'
 	@sshUser = 'gitomate'
 	@user    = 'gitomate'
-	# @config  = Config.get 'testing'
 	@quiet   = true
 
 	@cleanRepoSrc = File.expand_path( 'data/fixtures/clean', File.dirname( __FILE__ ) )
@@ -27,12 +26,12 @@ def initialize
 end
 
 
-def tmpDir
+def tmpDir subPath = ''
 
-	user = Etc.getpwnam( @user )
-	dir = "/run/shm/#{ user.uid }/gitomate/#{ randomString }"
 
-	FileUtils.mkpath( dir ).first
+	dir = "/run/shm/#{ Process.euid }/#{@user}/#{ randomString }/#{ subPath }"
+
+	dir.path.mkpath
 
 end
 

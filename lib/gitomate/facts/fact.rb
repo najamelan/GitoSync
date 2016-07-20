@@ -72,6 +72,7 @@ def reset
 	@mustDepend    = Array.eat( options.mustDepend )
 	@depend        = Array.eat( options.dependOn   )
 	@metas         = Array.eat( options.metas      )
+	@factPool      = Array.eat( options.factPool   )
 
 	@log           = Feedback.get self.class.name
 
@@ -96,11 +97,12 @@ def createState( opts = options )
 
 		select { |opt| ! options.metas .include? opt }.
 	   select { |opt| ! options.params.include? opt }.
+
 	   each do | key, value |
 
 			state[ key ] = { expect: value }
 
-	end
+	   end
 
 	state
 
@@ -268,37 +270,75 @@ end
 #
 def dependOn( klass, args, **opts )
 
-	result = dependUseless?( klass, args, **opts )  and  return result
+	opts = opts.to_settings
 
+	result = recycleDepend?( :dep, [], klass, args, **opts )  and  return result
 
+	if result = recycleDepend?( :pool, [], klass, args, **opts )
+
+		result.equal?( self )  or  @depend.push result
+		return result
+
+	end
+
+	opts.factPool = Array.eat( opts.factPool )
+	opts.factPool += [self] + @depend
 	@depend.push klass.new( **args, **opts )
+
+	@depend.last
 
 end
 
 
 
-# Check in our dependency chain if a dependency that does exaclty this has already been
+# type == :dep Check in our dependency chain if a dependency that is a superset of this has already been
 # depended on. This prevents useless creation of Facts that check the same things over
 # and over again.
 #
-def dependUseless?( klass, args, **opts )
+# type == :pool Check in the pool of available facts to see whether there is one exactly like the
+# depend we need. In this case we will depend on it.
+#
+def recycleDepend?( type, visited = [], klass, args, **opts )
 
-	found = @depend.find { |dep| dep.dependUseless?( klass, args, **opts ) } and return found
+	visited.include? object_id and return false
+	visited.push object_id
+
+
+	if type == :pool
+
+		@factPool.each do |fact|
+
+			f = fact.recycleDepend?( type, visited, klass, args, **opts ) and return f
+
+		end
+
+	end
+
+
+	@depend.each do |fact|
+
+		f = fact.recycleDepend?( type, visited, klass, args, **opts ) and return f
+
+	end
+
 
 	otherState = createState( self.class.settings.default.deep_merge( self.class.settings.userset ).deep_merge( opts ) )
 
-	if                                                  \
-		                                                 \
-		   	klass        ==  self.class                \
-		   && args         ==  params                    \
-			&& otherState.subset?( createState )          \
-                                                       \
+	type == :pool  and  stateComp = otherState      ==  createState
+	type == :dep   and  stateComp = otherState.subset?( createState )
+
+
+	if                                     \
+		                                    \
+		   	klass      ==  self.class     \
+		   && args       ==  params         \
+			&& stateComp                     \
+                                          \
    then
 
    	return self
 
 	end
-
 
 	false
 
@@ -330,10 +370,9 @@ end
 
 def == other
 
-	self.class == other.class or return nil
-
-	   params        == other.params         \
-	&& createState   == other.createState
+		self.class  == other.class          \
+	&& params      == other.params         \
+	&& createState == other.createState
 
 end
 

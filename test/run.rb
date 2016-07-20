@@ -45,6 +45,8 @@ def self.run( thorObject )
 
 	Test::Unit::UI::Console::TestRunner.run( self )
 
+	ap 'Facts created: ' + Facts::Fact.count.to_s
+
 end
 
 
